@@ -17,18 +17,18 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'ECSAD Defense Kiosk — Panelist Meal Ordering & Kitchen Board',
+  title: 'ECSAD Kiosk',
   description:
     'Panelist breakfast and lunch ordering kiosk with live order status tracking and real-time kitchen fulfillment board for ECSAD defense sessions.',
   openGraph: {
-    title: 'ECSAD Defense Kiosk',
+    title: 'ECSAD Kiosk',
     description:
       'Order your breakfast and lunch for today’s defense session and track preparation live.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ECSAD Defense Kiosk',
+    title: 'ECSAD Kiosk',
     description:
       'Panelist meal ordering kiosk and real-time kitchen fulfillment board.',
   },
