@@ -53,14 +53,18 @@ export default function KitchenBoardClient({
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [orderToVoid, setOrderToVoid] = useState<OrderRecord | null>(null);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [refreshing, setRefreshing] = useState(false);
   const orderDialogRef = useRef<HTMLDialogElement>(null);
+  const voidDialogRef = useRef<HTMLDialogElement>(null);
   const logoutDialogRef = useRef<HTMLDialogElement>(null);
   const selectedOrder = orders.find((order) => order.id === selectedOrderId);
+  const isVoidingOrder =
+    orderToVoid !== null && updatingId === orderToVoid.id;
 
   // Real-time SSE connection
   useEffect(() => {
@@ -96,6 +100,13 @@ export default function KitchenBoardClient({
       dialog.showModal();
     }
   }, [selectedOrder]);
+
+  useEffect(() => {
+    const dialog = voidDialogRef.current;
+    if (orderToVoid && dialog && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [orderToVoid]);
 
   useEffect(() => {
     const dialog = logoutDialogRef.current;
@@ -148,14 +159,10 @@ export default function KitchenBoardClient({
     }
   }
 
-  async function moveOrder(orderId: string, targetStatus: OrderStatus) {
-    if (
-      targetStatus === 'voided' &&
-      !window.confirm('Void this order? This action cannot be undone.')
-    ) {
-      return;
-    }
-
+  async function moveOrder(
+    orderId: string,
+    targetStatus: OrderStatus
+  ): Promise<boolean> {
     setActionError(null);
     setUpdatingId(orderId);
     try {
@@ -167,13 +174,13 @@ export default function KitchenBoardClient({
 
       if (res.status === 401) {
         router.push('/kitchen/login');
-        return;
+        return false;
       }
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         setActionError(data.error || 'Unable to update this order.');
-        return;
+        return false;
       }
 
       // Optimistically reflect immediately while SSE confirms
@@ -209,11 +216,19 @@ export default function KitchenBoardClient({
         });
         return next;
       });
+      return true;
     } catch {
       setActionError('Unable to update this order. Check your connection and try again.');
+      return false;
     } finally {
       setUpdatingId(null);
     }
+  }
+
+  async function confirmVoidOrder() {
+    if (!orderToVoid) return;
+    const succeeded = await moveOrder(orderToVoid.id, 'voided');
+    if (succeeded) setOrderToVoid(null);
   }
 
   // Detect duplicate panelist names across distinct deviceTokens for the same meal
@@ -772,7 +787,7 @@ export default function KitchenBoardClient({
                       <button
                         type="button"
                         disabled={isBusy}
-                        onClick={() => moveOrder(order.id, 'voided')}
+                        onClick={() => setOrderToVoid(order)}
                         aria-label="Void order"
                         title="Void order"
                         className="h-12 px-4 rounded-full border border-error/30 bg-error-container/40 text-error hover:bg-error-container font-label text-[12px] font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all disabled:opacity-60"
@@ -810,6 +825,65 @@ export default function KitchenBoardClient({
           </div>
         )}
       </main>
+      {orderToVoid && (
+        <dialog
+          ref={voidDialogRef}
+          aria-labelledby="void-dialog-title"
+          aria-describedby="void-dialog-description"
+          aria-busy={isVoidingOrder}
+          onCancel={(event) => {
+            event.preventDefault();
+            if (!isVoidingOrder) setOrderToVoid(null);
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget && !isVoidingOrder) {
+              setOrderToVoid(null);
+            }
+          }}
+          className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-outline-variant/30 bg-surface p-0 text-on-surface shadow-2xl backdrop:bg-black/50"
+        >
+          <div className="p-6 sm:p-7">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-error-container text-error">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+            <h2
+              id="void-dialog-title"
+              className="mt-4 text-center text-xl font-bold"
+            >
+              Void this order?
+            </h2>
+            <p
+              id="void-dialog-description"
+              className="mt-2 text-center text-sm leading-6 text-on-surface-variant"
+            >
+              Void {orderToVoid.panelistName}&apos;s{' '}
+              {orderToVoid.meal === 'breakfast' ? 'breakfast' : 'lunch'} order?
+              This action cannot be undone.
+            </p>
+
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+              <button
+                type="button"
+                autoFocus
+                disabled={isVoidingOrder}
+                onClick={() => setOrderToVoid(null)}
+                className="min-h-11 rounded-full border border-outline-variant/50 px-5 font-label text-sm font-semibold text-on-surface hover:bg-surface-container disabled:opacity-60"
+              >
+                Keep order
+              </button>
+              <button
+                type="button"
+                disabled={isVoidingOrder}
+                onClick={confirmVoidOrder}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-error px-5 font-label text-sm font-bold text-on-error hover:bg-error/90 disabled:opacity-60"
+              >
+                <X className="h-4 w-4" />
+                {isVoidingOrder ? 'Voiding...' : 'Void order'}
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
       {showLogoutDialog && (
         <dialog
           ref={logoutDialogRef}
