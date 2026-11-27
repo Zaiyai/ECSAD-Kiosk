@@ -31,7 +31,7 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 
 ### Orders and statuses
 - Breakfast and lunch are two separate orders, each with its own status.
-- Statuses: `Reviewing` → `Cooking` → `Served`.
+- Statuses: `Reviewing` → `Preparing` → `Served`.
 - A panelist can edit an order only while it is `Reviewing`.
 - The kitchen advances an order with a tap and can move it back one step. An order moved back to `Reviewing` is editable again.
 - No `Cancelled` state. No kitchen-to-panelist messaging.
@@ -42,7 +42,7 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 - Live updates via Supabase realtime. Tap to advance.
 
 ### Panelist view
-- Live status on the phone (Reviewing, Cooking, Served).
+- Live status on the phone (Reviewing, Preparing, Served).
 - The menu is fixed. No sold-out toggles.
 
 ## Menu (source of truth: `Kiosk Choices.md`)
