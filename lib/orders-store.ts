@@ -1,5 +1,3 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import crypto from 'node:crypto';
 import type {
   BreakfastSelection,
@@ -9,185 +7,164 @@ import type {
   OrderRecord,
   OrderStatus,
 } from './types';
+import { getSupabaseAdminClient } from './supabase-admin';
 
-type OrdersSubscriber = (orders: OrderRecord[]) => void;
-
-interface GlobalStoreState {
-  orders: OrderRecord[] | null;
-  subscribers: Set<OrdersSubscriber>;
-}
-
-const globalForStore = globalThis as unknown as {
-  __ecsadOrdersStore?: GlobalStoreState;
+type OrderItemRow = {
+  category: string;
+  item_name: string;
 };
 
-const storeState: GlobalStoreState =
-  globalForStore.__ecsadOrdersStore ?? {
-    orders: null,
-    subscribers: new Set<OrdersSubscriber>(),
-  };
+type OrderRow = {
+  id: string;
+  panelist_name: string;
+  device_token: string | null;
+  meal: string;
+  status: string;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+  order_items: OrderItemRow[] | null;
+};
 
-globalForStore.__ecsadOrdersStore = storeState;
+type OrderItemInput = {
+  category: string;
+  item_name: string;
+};
 
-const DATA_DIR = path.join(process.cwd(), '.data');
-const DATA_FILE = path.join(DATA_DIR, 'orders.json');
+const ORDER_SELECT =
+  'id,panelist_name,device_token,meal,status,note,created_at,updated_at,order_items(category,item_name)';
 
-function createInitialSeedOrders(): OrderRecord[] {
-  const now = Date.now();
-  return [
-    {
-      id: 'ord-santos-bf-1',
-      panelistName: 'Dr. Maria Santos',
-      deviceToken: '4b2a',
-      meal: 'breakfast',
-      status: 'preparing',
-      food: ['Pandesal', 'Scrambled Egg'],
-      coffee: 'Coffee Black',
-      drink: 'Water',
-      createdAt: new Date(now - 8 * 60 * 1000).toISOString(),
-      updatedAt: new Date(now - 4 * 60 * 1000).toISOString(),
-    },
-    {
-      id: 'ord-santos-bf-2',
-      panelistName: 'Dr. Maria Santos',
-      deviceToken: '9c1f',
-      meal: 'breakfast',
-      status: 'reviewing',
-      food: ['Pancake'],
-      coffee: 'Coffee White',
-      drink: 'Orange Juice',
-      createdAt: new Date(now - 5 * 60 * 1000).toISOString(),
-      updatedAt: new Date(now - 5 * 60 * 1000).toISOString(),
-    },
-    {
-      id: 'ord-reyes-bf-1',
-      panelistName: 'Prof. Alan Reyes',
-      deviceToken: '7e3d',
-      meal: 'breakfast',
-      status: 'reviewing',
-      food: ['Pancake'],
-      coffee: 'Coffee White',
-      drink: 'Orange Juice',
-      createdAt: new Date(now - 2 * 60 * 1000).toISOString(),
-      updatedAt: new Date(now - 2 * 60 * 1000).toISOString(),
-    },
-    {
-      id: 'ord-cruz-ln-1',
-      panelistName: 'Dean Angela Cruz',
-      deviceToken: '2a8c',
-      meal: 'lunch',
-      status: 'reviewing',
-      food: ['Shanghai', 'Buchi', 'Chicken'],
-      fruit: ['Apples'],
-      rice: 'Chaopan Rice',
-      drink: 'Coke',
-      createdAt: new Date(now - 35 * 1000).toISOString(),
-      updatedAt: new Date(now - 35 * 1000).toISOString(),
-    },
-    {
-      id: 'ord-diaz-ln-1',
-      panelistName: 'Engr. Roberto Diaz',
-      deviceToken: '5f1b',
-      meal: 'lunch',
-      status: 'preparing',
-      food: ['Siomai Steamed', 'Chicken'],
-      fruit: ['Orange'],
-      rice: 'Plain Rice',
-      drink: 'Royal',
-      note: 'Hot Prep',
-      createdAt: new Date(now - 14 * 60 * 1000).toISOString(),
-      updatedAt: new Date(now - 6 * 60 * 1000).toISOString(),
-    },
-    {
-      id: 'ord-diaz-bf-1',
-      panelistName: 'Engr. Roberto Diaz',
-      deviceToken: '5f1b',
-      meal: 'breakfast',
-      status: 'served',
-      food: ['Pandesal'],
-      coffee: 'Coffee Mix',
-      drink: 'Water',
-      note: 'Table 2',
-      createdAt: new Date(now - 38 * 60 * 1000).toISOString(),
-      updatedAt: new Date(now - 18 * 60 * 1000).toISOString(),
-    },
-  ];
-}
-
-function persistOrders(orders: OrderRecord[]) {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    fs.writeFileSync(DATA_FILE, JSON.stringify(orders, null, 2), 'utf8');
-  } catch {
-    // Fallback gracefully to in-memory store if filesystem is read-only
+function parseOrderStatus(value: string): OrderStatus {
+  switch (value.toLowerCase()) {
+    case 'reviewing':
+      return 'reviewing';
+    case 'preparing':
+      return 'preparing';
+    case 'served':
+      return 'served';
+    case 'voided':
+      return 'voided';
+    default:
+      throw new Error(`Unsupported order status "${value}".`);
   }
 }
 
-function loadOrders(): OrderRecord[] {
-  if (storeState.orders) {
-    return storeState.orders;
+function mapOrderRow(row: OrderRow): OrderRecord {
+  const meal = row.meal.toLowerCase();
+  if (meal !== 'breakfast' && meal !== 'lunch') {
+    throw new Error(`Unsupported meal value "${row.meal}" on order ${row.id}.`);
   }
+  const status = parseOrderStatus(row.status);
 
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf8');
-      const parsed = JSON.parse(raw) as OrderRecord[];
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        storeState.orders = parsed;
-        return storeState.orders;
-      }
-    }
-  } catch {
-    // Ignore parse errors and re-seed
-  }
+  const items = row.order_items ?? [];
+  const categoryItems = (category: string) =>
+    items
+      .filter((item) => item.category.toLowerCase() === category)
+      .map((item) => item.item_name);
+  const firstItem = (category: string) => categoryItems(category)[0];
 
-  const seeded = createInitialSeedOrders();
-  storeState.orders = seeded;
-  persistOrders(seeded);
-  return storeState.orders;
-}
-
-function broadcastUpdate() {
-  const current = getAllOrders();
-  for (const subscriber of storeState.subscribers) {
-    try {
-      subscriber(current);
-    } catch {
-      storeState.subscribers.delete(subscriber);
-    }
-  }
-}
-
-export function subscribeToOrders(subscriber: OrdersSubscriber): () => void {
-  storeState.subscribers.add(subscriber);
-  return () => {
-    storeState.subscribers.delete(subscriber);
+  return {
+    id: row.id,
+    panelistName: row.panelist_name,
+    deviceToken: row.device_token ?? '',
+    meal,
+    status,
+    food: categoryItems('food'),
+    coffee: firstItem('coffee'),
+    fruit: categoryItems('fruit'),
+    rice: firstItem('rice'),
+    drink: firstItem('drink') ?? '',
+    note: row.note ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }
 
-export function getAllOrders(): OrderRecord[] {
-  const orders = loadOrders();
-  return [...orders].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+function orderItemsForSelection(
+  selection: BreakfastSelection | LunchSelection
+): OrderItemInput[] {
+  const items: OrderItemInput[] = selection.food.map((item_name) => ({
+    category: 'food',
+    item_name,
+  }));
+  if ('coffee' in selection) {
+    items.push({ category: 'coffee', item_name: selection.coffee });
+    items.push({ category: 'drink', item_name: selection.drink });
+  } else {
+    items.push(
+      ...selection.fruit.map((item_name) => ({ category: 'fruit', item_name }))
+    );
+    items.push({ category: 'rice', item_name: selection.rice });
+    items.push({ category: 'drink', item_name: selection.drink });
+  }
+  return items;
 }
 
-export function getOrdersForPanelist(
+function orderItemsForUpdate(params: {
+  meal: MealType;
+  food: string[];
+  coffee?: string;
+  fruit?: string[];
+  rice?: string;
+  drink: string;
+}): OrderItemInput[] {
+  const items: OrderItemInput[] = params.food.map((item_name) => ({
+    category: 'food',
+    item_name,
+  }));
+  if (params.meal === 'breakfast') {
+    if (!params.coffee) {
+      throw new Error('Breakfast updates require a coffee selection.');
+    }
+    items.push({ category: 'coffee', item_name: params.coffee });
+  } else {
+    if (!params.rice || !params.fruit?.length) {
+      throw new Error('Lunch updates require fruit and a rice selection.');
+    }
+    items.push(
+      ...params.fruit.map((item_name) => ({ category: 'fruit', item_name }))
+    );
+    items.push({ category: 'rice', item_name: params.rice });
+  }
+  items.push({ category: 'drink', item_name: params.drink });
+  return items;
+}
+
+async function fetchOrders(
+  column?: 'device_token' | 'panelist_name',
+  value?: string
+): Promise<OrderRecord[]> {
+  const client = getSupabaseAdminClient();
+  let query = client.from('orders').select(ORDER_SELECT).order('created_at', {
+    ascending: false,
+  });
+  if (column === 'device_token' && value) {
+    query = query.eq('device_token', value);
+  } else if (column === 'panelist_name' && value) {
+    query = query.ilike('panelist_name', value.replace(/[\\%_]/g, '\\$&'));
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    throw new Error(`Failed to load orders from Supabase: ${error.message}`);
+  }
+  return ((data ?? []) as unknown as OrderRow[]).map(mapOrderRow);
+}
+
+export async function getAllOrders(): Promise<OrderRecord[]> {
+  return fetchOrders();
+}
+
+export async function getOrdersForPanelist(
   deviceToken?: string | null,
   panelistName?: string | null
-): OrderRecord[] {
-  const all = getAllOrders();
+): Promise<OrderRecord[]> {
   if (deviceToken) {
-    const byToken = all.filter((o) => o.deviceToken === deviceToken);
-    if (byToken.length > 0) return byToken;
+    const orders = await fetchOrders('device_token', deviceToken);
+    if (orders.length > 0) return orders;
   }
-  if (panelistName) {
-    const normalized = panelistName.trim().toLowerCase();
-    return all.filter(
-      (o) => o.panelistName.trim().toLowerCase() === normalized
-    );
+  if (panelistName?.trim()) {
+    return fetchOrders('panelist_name', panelistName.trim());
   }
   return [];
 }
@@ -222,82 +199,103 @@ export function computeMetrics(orders: OrderRecord[]): KitchenMetrics {
   };
 }
 
-export function createPanelistOrders(params: {
+export async function createPanelistOrders(params: {
   panelistName: string;
   deviceToken: string;
   breakfast?: BreakfastSelection;
   lunch?: LunchSelection;
-}): OrderRecord[] {
-  const orders = loadOrders();
-  const nowIso = new Date().toISOString();
-  const cleanName = params.panelistName.trim();
-  const cleanToken = params.deviceToken.trim() || crypto.randomBytes(2).toString('hex');
-
+}): Promise<OrderRecord[]> {
+  const now = new Date().toISOString();
+  const panelistName = params.panelistName.trim();
+  const deviceToken =
+    params.deviceToken.trim() || crypto.randomBytes(2).toString('hex');
   const created: OrderRecord[] = [];
 
   if (params.breakfast) {
-    const bfOrder: OrderRecord = {
-      id: `ord-${crypto.randomUUID().slice(0, 8)}`,
-      panelistName: cleanName,
-      deviceToken: cleanToken,
+    created.push({
+      id: crypto.randomUUID(),
+      panelistName,
+      deviceToken,
       meal: 'breakfast',
       status: 'reviewing',
       food: params.breakfast.food,
       coffee: params.breakfast.coffee,
       drink: params.breakfast.drink,
-      createdAt: nowIso,
-      updatedAt: nowIso,
-    };
-    orders.unshift(bfOrder);
-    created.push(bfOrder);
+      createdAt: now,
+      updatedAt: now,
+    });
   }
 
   if (params.lunch) {
-    const lunchOrder: OrderRecord = {
-      id: `ord-${crypto.randomUUID().slice(0, 8)}`,
-      panelistName: cleanName,
-      deviceToken: cleanToken,
+    created.push({
+      id: crypto.randomUUID(),
+      panelistName,
+      deviceToken,
       meal: 'lunch',
       status: 'reviewing',
       food: params.lunch.food,
       fruit: params.lunch.fruit,
       rice: params.lunch.rice,
       drink: params.lunch.drink,
-      createdAt: nowIso,
-      updatedAt: nowIso,
-    };
-    orders.unshift(lunchOrder);
-    created.push(lunchOrder);
+      createdAt: now,
+      updatedAt: now,
+    });
   }
 
-  storeState.orders = orders;
-  persistOrders(orders);
-  broadcastUpdate();
+  const payload = created.map((order) => ({
+    id: order.id,
+    panelist_name: order.panelistName,
+    device_token: order.deviceToken,
+    meal: order.meal,
+    status: order.status,
+    note: order.note ?? null,
+    created_at: order.createdAt,
+    updated_at: order.updatedAt,
+    items: orderItemsForSelection(
+      order.meal === 'breakfast'
+        ? {
+            food: order.food,
+            coffee: order.coffee ?? '',
+            drink: order.drink,
+          }
+        : {
+            food: order.food,
+            fruit: order.fruit ?? [],
+            rice: order.rice ?? '',
+            drink: order.drink,
+          }
+    ),
+  }));
 
+  const { error } = await getSupabaseAdminClient().rpc(
+    'create_panelist_orders',
+    { p_orders: payload }
+  );
+  if (error) {
+    throw new Error(`Failed to create orders in Supabase: ${error.message}`);
+  }
   return created;
 }
 
-export function updateOrderStatus(
+export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus
-): OrderRecord | null {
-  const orders = loadOrders();
-  const index = orders.findIndex((o) => o.id === orderId);
-  if (index === -1) return null;
+): Promise<OrderRecord | null> {
+  const client = getSupabaseAdminClient();
+  const { data, error } = await client
+    .from('orders')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', orderId)
+    .select(ORDER_SELECT)
+    .maybeSingle();
 
-  const updated: OrderRecord = {
-    ...orders[index],
-    status,
-    updatedAt: new Date().toISOString(),
-  };
-  orders[index] = updated;
-  storeState.orders = orders;
-  persistOrders(orders);
-  broadcastUpdate();
-  return updated;
+  if (error) {
+    throw new Error(`Failed to update order status in Supabase: ${error.message}`);
+  }
+  return data ? mapOrderRow(data as unknown as OrderRow) : null;
 }
 
-export function updatePanelistOrderSelections(params: {
+export async function updatePanelistOrderSelections(params: {
   orderId: string;
   deviceToken: string;
   meal: MealType;
@@ -306,39 +304,47 @@ export function updatePanelistOrderSelections(params: {
   fruit?: string[];
   rice?: string;
   drink: string;
-}): { order?: OrderRecord; error?: string; statusCode?: number } {
-  const orders = loadOrders();
-  const index = orders.findIndex((o) => o.id === params.orderId);
-  if (index === -1) {
+}): Promise<{ order?: OrderRecord; error?: string; statusCode?: number }> {
+  const items = orderItemsForUpdate(params);
+  const { data, error } = await getSupabaseAdminClient().rpc(
+    'update_panelist_order_items',
+    {
+      p_order_id: params.orderId,
+      p_device_token: params.deviceToken,
+      p_meal: params.meal,
+      p_items: items,
+    }
+  );
+  if (error) {
+    throw new Error(`Failed to update order items in Supabase: ${error.message}`);
+  }
+
+  if (data === 'not_found') {
     return { error: 'Order not found.', statusCode: 404 };
   }
-
-  const existing = orders[index];
-  if (existing.deviceToken !== params.deviceToken) {
-    return { error: 'You do not have permission to edit this order.', statusCode: 403 };
+  if (data === 'forbidden') {
+    return {
+      error: 'You do not have permission to edit this order.',
+      statusCode: 403,
+    };
   }
-
-  if (existing.status !== 'reviewing') {
+  if (data === 'locked') {
     return {
       error: 'Kitchen has started — editing is locked for this order.',
       statusCode: 409,
     };
   }
+  if (data === 'meal_mismatch') {
+    return { error: 'The selected meal does not match this order.', statusCode: 400 };
+  }
+  if (data !== 'ok') {
+    throw new Error('Supabase returned an unexpected order update result.');
+  }
 
-  const updated: OrderRecord = {
-    ...existing,
-    food: params.food,
-    coffee: params.meal === 'breakfast' ? params.coffee : existing.coffee,
-    fruit: params.meal === 'lunch' ? params.fruit : existing.fruit,
-    rice: params.meal === 'lunch' ? params.rice : existing.rice,
-    drink: params.drink,
-    updatedAt: new Date().toISOString(),
-  };
-
-  orders[index] = updated;
-  storeState.orders = orders;
-  persistOrders(orders);
-  broadcastUpdate();
-
+  const orders = await fetchOrders();
+  const updated = orders.find((order) => order.id === params.orderId);
+  if (!updated) {
+    throw new Error('Updated order was not found after saving to Supabase.');
+  }
   return { order: updated };
 }

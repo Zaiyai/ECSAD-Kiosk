@@ -17,37 +17,45 @@ export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
+  let body: {
+    status?: OrderStatus;
+    deviceToken?: string;
+    meal?: MealType;
+    food?: string[];
+    coffee?: string;
+    fruit?: string[];
+    rice?: string;
+    drink?: string;
+  };
   try {
-    const { id } = await context.params;
-    const body = (await req.json()) as {
-      status?: OrderStatus;
-      deviceToken?: string;
-      meal?: MealType;
-      food?: string[];
-      coffee?: string;
-      fruit?: string[];
-      rice?: string;
-      drink?: string;
-    };
+    body = (await req.json()) as typeof body;
+  } catch {
+    return NextResponse.json(
+      { error: 'Invalid update payload.' },
+      { status: 400 }
+    );
+  }
 
-    // Kitchen staff status transition
-    if (body.status !== undefined) {
-      const authed = await isKitchenAuthenticated();
-      if (!authed) {
-        return NextResponse.json(
-          { error: 'Kitchen staff authentication required.' },
-          { status: 401 }
-        );
-      }
+  // Kitchen staff status transition
+  if (body.status !== undefined) {
+    const authed = await isKitchenAuthenticated();
+    if (!authed) {
+      return NextResponse.json(
+        { error: 'Kitchen staff authentication required.' },
+        { status: 401 }
+      );
+    }
 
-      if (!VALID_STATUSES.includes(body.status)) {
-        return NextResponse.json(
-          { error: 'Invalid order status.' },
-          { status: 400 }
-        );
-      }
+    if (!VALID_STATUSES.includes(body.status)) {
+      return NextResponse.json(
+        { error: 'Invalid order status.' },
+        { status: 400 }
+      );
+    }
 
-      const updated = updateOrderStatus(id, body.status);
+    try {
+      const updated = await updateOrderStatus(id, body.status);
       if (!updated) {
         return NextResponse.json(
           { error: 'Order not found.' },
@@ -56,41 +64,54 @@ export async function PATCH(
       }
 
       return NextResponse.json({ order: updated });
-    }
-
-    // Panelist editing order while still in Reviewing state
-    if (!body.deviceToken || !body.meal || !Array.isArray(body.food) || !body.drink) {
+    } catch (error) {
+      console.error('Failed to update order status.', error);
       return NextResponse.json(
-        { error: 'Incomplete update payload.' },
-        { status: 400 }
+        { error: 'Unable to update the order in the database.' },
+        { status: 500 }
       );
     }
+  }
 
-    if (body.food.length === 0) {
-      return NextResponse.json(
-        { error: 'Select at least 1 food item.' },
-        { status: 400 }
-      );
-    }
+  // Panelist editing order while still in Reviewing state
+  if (
+    !body.deviceToken ||
+    (body.meal !== 'breakfast' && body.meal !== 'lunch') ||
+    !Array.isArray(body.food) ||
+    !body.drink
+  ) {
+    return NextResponse.json(
+      { error: 'Incomplete update payload.' },
+      { status: 400 }
+    );
+  }
 
-    if (body.meal === 'breakfast' && !body.coffee) {
-      return NextResponse.json(
-        { error: 'Please select a coffee option.' },
-        { status: 400 }
-      );
-    }
+  if (body.food.length === 0) {
+    return NextResponse.json(
+      { error: 'Select at least 1 food item.' },
+      { status: 400 }
+    );
+  }
 
-    if (
-      body.meal === 'lunch' &&
-      (!Array.isArray(body.fruit) || body.fruit.length === 0 || !body.rice)
-    ) {
-      return NextResponse.json(
-        { error: 'Please select at least 1 fruit and a rice option.' },
-        { status: 400 }
-      );
-    }
+  if (body.meal === 'breakfast' && !body.coffee) {
+    return NextResponse.json(
+      { error: 'Please select a coffee option.' },
+      { status: 400 }
+    );
+  }
 
-    const result = updatePanelistOrderSelections({
+  if (
+    body.meal === 'lunch' &&
+    (!Array.isArray(body.fruit) || body.fruit.length === 0 || !body.rice)
+  ) {
+    return NextResponse.json(
+      { error: 'Please select at least 1 fruit and a rice option.' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const result = await updatePanelistOrderSelections({
       orderId: id,
       deviceToken: body.deviceToken,
       meal: body.meal,
@@ -109,10 +130,11 @@ export async function PATCH(
     }
 
     return NextResponse.json({ order: result.order });
-  } catch {
+  } catch (error) {
+    console.error('Failed to update panelist order selections.', error);
     return NextResponse.json(
-      { error: 'Unable to process update.' },
-      { status: 400 }
+      { error: 'Unable to save the order changes to the database.' },
+      { status: 500 }
     );
   }
 }

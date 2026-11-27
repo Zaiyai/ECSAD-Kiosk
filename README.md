@@ -12,9 +12,9 @@ Built for a one-day event, with Supabase as the backend.
 3. Order breakfast, then lunch.
 4. Watch live order status on their phone.
 
-**Kitchen staff** (one shared Supabase Auth login)
+**Kitchen staff** (one shared staff login)
 1. Log in at `/kitchen` on a kitchen phone.
-2. See orders in three columns: Reviewing, Cooking, Served.
+2. See orders in three columns: Reviewing, Preparing, Served.
 3. Tap a card to advance it, or move it back one step.
 
 ## Order statuses
@@ -24,7 +24,7 @@ Breakfast and lunch are separate orders, each with its own status.
 | Status | Meaning | Panelist can edit? |
 | --- | --- | --- |
 | Reviewing | Submitted, not started | Yes |
-| Cooking | Kitchen has started | No |
+| Preparing | Kitchen has started | No |
 | Served | Done | No |
 
 The kitchen can move an order back one step. An order moved back to Reviewing becomes editable again.
@@ -53,23 +53,29 @@ The menu is fixed. There are no sold-out toggles.
 ## Tech stack
 
 - Next.js
-- Supabase (Postgres, Auth, Realtime)
+- Supabase Postgres (server-side service-role access)
 
 ## Setup
 
 1. Create a Supabase project.
-2. Create the tables (orders, order items) and the row-level security policies. See `CONTEXT.md` for the rules they must enforce.
-3. Create one kitchen user in Supabase Auth.
+2. Create the `orders` and `order_items` tables shown in your schema.
+3. Apply `supabase/migrations/20261128000000_orders_storage.sql` in the Supabase SQL Editor. It adds the app-specific order columns and atomic order-write functions.
 4. Copy `.env.example` to `.env.local` and fill in:
    ```
    NEXT_PUBLIC_SUPABASE_URL=
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+   KITCHEN_AUTH_SECRET=
+   KITCHEN_STAFF_EMAIL=
+   KITCHEN_STAFF_PASSCODE=
    ```
+   The service-role key is server-only. Never prefix it with `NEXT_PUBLIC_` or expose it in browser code.
 5. Install and run:
    ```
    npm install
    npm run dev
    ```
+
+The app reads and writes orders directly in Supabase. Existing `.data/orders.json` data is retained as an archive and is not imported.
 
 ## Known limitations
 

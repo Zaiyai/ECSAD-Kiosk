@@ -4,7 +4,7 @@ import { isKitchenAuthenticated } from '@/lib/auth';
 import { computeMetrics, getAllOrders } from '@/lib/orders-store';
 import KitchenBoardClient from '@/components/KitchenBoardClient';
 
-export default function KitchenBoardPage() {
+export default async function KitchenBoardPage() {
   return (
     <Suspense fallback={null}>
       <KitchenBoardContent />
@@ -18,7 +18,7 @@ async function KitchenBoardContent() {
     redirect('/kitchen/login');
   }
 
-  const orders = getAllOrders();
+  const orders = await getAllOrders();
   const metrics = computeMetrics(orders);
 
   return (

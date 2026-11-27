@@ -4,7 +4,6 @@ import {
   computeMetrics,
   getAllOrders,
   getOrdersForPanelist,
-  subscribeToOrders,
 } from '@/lib/orders-store';
 import type { OrderRecord } from '@/lib/types';
 
@@ -26,52 +25,79 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const encoder = new TextEncoder();
+  const getSnapshotOrders = () =>
+    scope === 'kitchen'
+      ? getAllOrders()
+      : getOrdersForPanelist(deviceToken, panelistName);
 
+  let initialOrders: OrderRecord[];
+  try {
+    initialOrders = await getSnapshotOrders();
+  } catch (error) {
+    console.error('Failed to start order updates stream.', error);
+    return NextResponse.json(
+      { error: 'Unable to load orders from the database.' },
+      { status: 500 }
+    );
+  }
+
+  const encoder = new TextEncoder();
   const stream = new ReadableStream({
     start(controller) {
-      const sendSnapshot = (allOrders: OrderRecord[]) => {
-        if (scope === 'kitchen') {
-          const payload = JSON.stringify({
-            orders: allOrders,
-            metrics: computeMetrics(allOrders),
-          });
-          controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-        } else {
-          const filtered = getOrdersForPanelist(deviceToken, panelistName);
-          const payload = JSON.stringify({ orders: filtered });
-          controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+      let closed = false;
+      let polling = false;
+      let previousPayload = '';
+
+      const sendSnapshot = (orders: OrderRecord[]) => {
+        const snapshot =
+          scope === 'kitchen'
+            ? { orders, metrics: computeMetrics(orders) }
+            : { orders };
+        const payload = JSON.stringify(snapshot);
+        if (payload === previousPayload) return;
+        previousPayload = payload;
+        controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+      };
+
+      const poll = async () => {
+        if (closed || polling) return;
+        polling = true;
+        try {
+          sendSnapshot(await getSnapshotOrders());
+        } catch (error) {
+          console.error('Failed to refresh order updates stream.', error);
+        } finally {
+          polling = false;
         }
       };
 
-      sendSnapshot(getAllOrders());
-
-      const unsubscribe = subscribeToOrders((orders) => {
-        try {
-          sendSnapshot(orders);
-        } catch {
-          unsubscribe();
-        }
-      });
-
-      const heartbeat = setInterval(() => {
-        try {
-          controller.enqueue(encoder.encode(`: keepalive\n\n`));
-        } catch {
-          clearInterval(heartbeat);
-          unsubscribe();
-        }
-      }, 25000);
-
-      req.signal.addEventListener('abort', () => {
-        clearInterval(heartbeat);
-        unsubscribe();
+      const close = () => {
+        if (closed) return;
+        closed = true;
+        clearInterval(pollingInterval);
+        clearInterval(heartbeatInterval);
         try {
           controller.close();
         } catch {
-          // Stream already closed
+          // The client may have already closed the stream.
         }
-      });
+      };
+
+      sendSnapshot(initialOrders);
+      const pollingInterval = setInterval(() => {
+        void poll();
+      }, 5000);
+      const heartbeatInterval = setInterval(() => {
+        if (closed) return;
+        try {
+          controller.enqueue(encoder.encode(': keepalive\n\n'));
+        } catch {
+          close();
+        }
+      }, 25000);
+
+      req.signal.addEventListener('abort', close, { once: true });
+      if (req.signal.aborted) close();
     },
   });
 

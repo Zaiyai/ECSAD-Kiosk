@@ -10,9 +10,10 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 
 ### Users and access
 - Panelists use their own phones. They enter only their name. No account, no password.
-- Kitchen staff use one shared Supabase Auth login on several phones, at `/kitchen`.
-- The earlier idea of a hardcoded `root` / `password123` login was dropped. The site is deployed publicly, so use a real Supabase Auth user.
+- Kitchen staff use one shared app login on several phones, at `/kitchen`.
+- Staff sign-in uses the app's signed session cookie; configure its credentials and signing secret through environment variables for deployment.
 - The link or QR is shared only at the venue. No access code and no pre-registered name list. Anyone with the link could submit orders; this is accepted.
+- All Supabase access is server-side through Next.js route handlers. The service-role key bypasses RLS, so it must never be exposed to a browser; handlers enforce staff authentication and panelist device-token checks.
 
 ### Panelist identity
 - Device-bound. After submitting, the order IDs are saved in the browser (localStorage or a cookie).
@@ -39,7 +40,7 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 ### Kitchen view
 - Three columns or tabs by status.
 - Each card shows the panelist's name, the meal, and the picks.
-- Live updates via Supabase realtime. Tap to advance.
+- Live updates via server-sent events that poll Supabase every five seconds. Tap to advance.
 
 ### Panelist view
 - Live status on the phone (Reviewing, Preparing, Served).
@@ -60,13 +61,13 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 
 ## Constraints for implementation
 
-- **Row-level security is the main protection.** Panelists have no auth, so policies must:
-  - allow inserting orders;
-  - allow updating or reading a panelist's own order only while it is `Reviewing`, tied to the order ID held by that device;
-  - restrict reading all orders and changing status to the authenticated kitchen user.
+- **The service-role key bypasses row-level security.** Keep it server-only and enforce access in route handlers and the database write functions:
+  - public order creation accepts validated selections;
+  - panelist edits require the matching device token and a `Reviewing` status;
+  - kitchen order reads and status changes require the staff session.
 - Enforce the selection rules on the server side (or in database constraints), not only in the UI.
 - Mobile-first UI. Panelists are on phones, and kitchen staff also use phones.
-- Panelist status updates and the kitchen board both use realtime subscriptions.
+- Panelist status updates and the kitchen board both use the order stream.
 
 ## Known risks (accepted)
 
@@ -84,4 +85,4 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 
 ## Suggested next step
 
-Scaffold the Supabase schema (orders, order items, statuses), the RLS policies, and the Next.js pages for panelists and the kitchen.
+Apply the order-storage SQL migration, configure the server-only service-role secret, and verify database access in the deployed environment.
