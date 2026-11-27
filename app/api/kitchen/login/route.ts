@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
           code: '401 Auth Error',
           error: 'Invalid Credentials',
           message:
-            'The kitchen credentials entered do not match active kitchen station permissions. Check the station guide or verify with your ECSAD lead.',
+            'The kitchen credentials entered do not match active kitchen station permissions. Verify them with your ECSAD lead.',
         },
         { status: 401 }
       );

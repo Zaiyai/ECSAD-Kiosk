@@ -22,13 +22,12 @@ import { ECSAD_LOGO_SRC } from '@/lib/menu-data';
 
 export default function KitchenLoginClient() {
   const router = useRouter();
-  const [email, setEmail] = useState('kitchen-team@ecsad.local');
+  const [email, setEmail] = useState('');
   const [passcode, setPasscode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [showGuide, setShowGuide] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,12 +57,6 @@ export default function KitchenLoginClient() {
       setAuthError('Unable to reach authentication server. Please retry.');
       setSubmitting(false);
     }
-  }
-
-  function fillStationGuideCredentials() {
-    setEmail('kitchen-team@ecsad.local');
-    setPasscode('ecsad2026');
-    setAuthError(null);
   }
 
   return (
@@ -159,7 +152,7 @@ export default function KitchenLoginClient() {
                     Kitchen Staff Portal
                   </h2>
                   <p className="text-[14px] leading-[20px] text-on-surface-variant mt-1.5 max-w-sm">
-                    Authorized defense kitchen stations &amp; leads only
+                    Authorized ECSAD kitchen leads only
                   </p>
                 </div>
 
@@ -215,7 +208,7 @@ export default function KitchenLoginClient() {
                           setEmail(e.target.value);
                           setAuthError(null);
                         }}
-                        placeholder="kitchen-team@ecsad.local"
+                        placeholder="Enter Staff Email"
                         className="w-full h-13 pl-11 pr-4 bg-surface-container-low text-on-surface rounded-xl text-[14px] border border-outline-variant/40 focus:bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all"
                       />
                     </div>
@@ -329,7 +322,7 @@ export default function KitchenLoginClient() {
                   </button>
                 </form>
 
-                {/* Quick Assist & Station Guide Card */}
+                {/* Credential assistance */}
                 <div className="mt-7 p-4 rounded-xl bg-surface-container-low text-on-surface-variant flex items-start gap-3 relative z-10">
                   <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 text-primary">
                     <HelpCircle className="w-4 h-4" />
@@ -338,34 +331,7 @@ export default function KitchenLoginClient() {
                     <strong className="font-semibold text-on-surface block mb-0.5">
                       Need Kitchen Credentials?
                     </strong>
-                    <p>
-                      Ask your ECSAD Kitchen Lead or consult the printed station
-                      guide affixed to prep stations.
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setShowGuide((prev) => !prev)}
-                        className="font-label text-[11px] font-bold text-primary hover:underline"
-                      >
-                        {showGuide ? 'Hide Station Guide' : 'View Station Guide'}
-                      </button>
-                      {showGuide && (
-                        <button
-                          type="button"
-                          onClick={fillStationGuideCredentials}
-                          className="font-label text-[11px] font-bold text-on-primary-fixed bg-primary-fixed px-2.5 py-1 rounded-md hover:bg-primary-fixed-dim transition-colors"
-                        >
-                          Use Station 1 Credentials
-                        </button>
-                      )}
-                    </div>
-                    {showGuide && (
-                      <div className="mt-2 p-2.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 font-mono text-[11px] text-on-surface">
-                        <div>Account: kitchen-team@ecsad.local</div>
-                        <div>Passcode: ecsad2026</div>
-                      </div>
-                    )}
+                    <p>Ask ECSAD Officers for access.</p>
                   </div>
                 </div>
 
