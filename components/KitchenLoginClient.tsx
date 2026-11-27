@@ -117,7 +117,7 @@ export default function KitchenLoginClient() {
               </div>
               <div>
                 <span className="font-label text-[11px] text-primary tracking-widest block uppercase font-bold">
-                  ECSAD · Defense Kiosk
+                  ECSAD · Cute ni Edrian
                 </span>
                 <span className="text-[18px] leading-6 text-on-surface font-bold">
                   Kiosk Management Core
@@ -340,7 +340,7 @@ export default function KitchenLoginClient() {
                     </strong>
                     <p>
                       Ask your ECSAD Kitchen Lead or consult the printed station
-                      guide affixed to prep station 1.
+                      guide affixed to prep stations.
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-3">
                       <button

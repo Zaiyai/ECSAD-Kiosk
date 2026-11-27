@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   AlertTriangle,
@@ -52,8 +52,11 @@ export default function KitchenBoardClient({
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [refreshing, setRefreshing] = useState(false);
+  const orderDialogRef = useRef<HTMLDialogElement>(null);
+  const selectedOrder = orders.find((order) => order.id === selectedOrderId);
 
   // Real-time SSE connection
   useEffect(() => {
@@ -82,6 +85,13 @@ export default function KitchenBoardClient({
       clearInterval(tick);
     };
   }, []);
+
+  useEffect(() => {
+    const dialog = orderDialogRef.current;
+    if (selectedOrder && dialog && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [selectedOrder]);
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -506,7 +516,12 @@ export default function KitchenBoardClient({
                     </div>
 
                     <div className="bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between gap-2">
-                      <span className="text-[12px] text-on-surface-variant truncate">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedOrderId(order.id)}
+                        aria-label={`View full order for ${order.panelistName}`}
+                        className="text-[12px] text-on-surface-variant truncate text-left hover:text-primary cursor-pointer"
+                      >
                         {[
                           ...order.food,
                           order.coffee,
@@ -516,7 +531,7 @@ export default function KitchenBoardClient({
                         ]
                           .filter(Boolean)
                           .join(', ')}
-                      </span>
+                      </button>
                       {order.status === 'served' && (
                           <button
                             type="button"
@@ -623,7 +638,20 @@ export default function KitchenBoardClient({
                   </div>
 
                   {/* Food Choices Box */}
-                  <div className="bg-surface-container-low rounded-lg p-3 flex flex-col gap-2.5">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-haspopup="dialog"
+                    aria-label={`View full order for ${order.panelistName}`}
+                    onClick={() => setSelectedOrderId(order.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setSelectedOrderId(order.id);
+                      }
+                    }}
+                    className="bg-surface-container-low rounded-lg p-3 flex flex-col gap-2.5 cursor-pointer hover:ring-1 hover:ring-primary/30 focus-visible:outline-2 focus-visible:outline-primary"
+                  >
                     <div className="flex flex-col gap-1">
                       <span className="font-label text-[11px] text-on-surface-variant tracking-wide">
                         Food Picks ({order.food.length}{' '}
@@ -754,6 +782,136 @@ export default function KitchenBoardClient({
           </div>
         )}
       </main>
+      {selectedOrder && (
+        <dialog
+          ref={orderDialogRef}
+          aria-labelledby="order-details-title"
+          onCancel={(event) => {
+            event.preventDefault();
+            setSelectedOrderId(null);
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedOrderId(null);
+            }
+          }}
+          className="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl border border-outline-variant/30 bg-surface p-0 text-on-surface shadow-2xl backdrop:bg-black/50"
+        >
+          <div className="p-5">
+            <header className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <span className="font-label text-[11px] font-bold uppercase tracking-wider text-primary">
+                  {selectedOrder.meal === 'breakfast' ? 'Breakfast' : 'Lunch'}
+                </span>
+                <h2
+                  id="order-details-title"
+                  className="text-xl font-bold text-on-surface"
+                >
+                  Order details
+                </h2>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  {selectedOrder.panelistName}
+                </p>
+              </div>
+              <button
+                type="button"
+                autoFocus
+                aria-label="Close order details"
+                onClick={() => setSelectedOrderId(null)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </header>
+
+            <dl className="mt-5 grid grid-cols-2 gap-3 rounded-xl bg-surface-container-low p-3 text-sm">
+              <div>
+                <dt className="text-xs text-on-surface-variant">Status</dt>
+                <dd className="mt-0.5 font-semibold">
+                  {STATUS_LABELS[selectedOrder.status]}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-on-surface-variant">Token</dt>
+                <dd className="mt-0.5 font-semibold">
+                  #{selectedOrder.deviceToken}
+                </dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="text-xs text-on-surface-variant">Placed</dt>
+                <dd className="mt-0.5 font-semibold">
+                  {formatRelativeTime(selectedOrder.createdAt, nowMs)}
+                </dd>
+              </div>
+            </dl>
+
+            <section className="mt-4 rounded-xl border border-outline-variant/30 p-4">
+              <h3 className="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                Food Picks
+              </h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {selectedOrder.food.map((item) => (
+                  <li
+                    key={item}
+                    className="rounded-lg bg-surface-container-low px-3 py-2 text-sm font-semibold"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {selectedOrder.meal === 'breakfast' ? (
+              <dl className="mt-3 grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-on-surface-variant">Coffee</dt>
+                  <dd className="mt-1 font-semibold">
+                    {selectedOrder.coffee || 'No Coffee'}
+                  </dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-on-surface-variant">Drink</dt>
+                  <dd className="mt-1 font-semibold">{selectedOrder.drink}</dd>
+                </div>
+              </dl>
+            ) : (
+              <dl className="mt-3 grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-on-surface-variant">Fruit</dt>
+                  <dd className="mt-1 font-semibold">
+                    {selectedOrder.fruit?.join(', ') || 'None'}
+                  </dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-on-surface-variant">Rice</dt>
+                  <dd className="mt-1 font-semibold">
+                    {selectedOrder.rice || 'Plain Rice'}
+                  </dd>
+                </div>
+                <div className="col-span-2 rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-on-surface-variant">Drink</dt>
+                  <dd className="mt-1 font-semibold">{selectedOrder.drink}</dd>
+                </div>
+              </dl>
+            )}
+
+            {selectedOrder.note && (
+              <div className="mt-3 rounded-xl bg-surface-container-low p-3">
+                <span className="text-xs text-on-surface-variant">Note</span>
+                <p className="mt-1 font-semibold">{selectedOrder.note}</p>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setSelectedOrderId(null)}
+              className="mt-5 min-h-11 w-full rounded-full bg-primary text-on-primary font-label font-bold hover:bg-primary-container"
+            >
+              Close
+            </button>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 }
