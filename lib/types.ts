@@ -1,6 +1,6 @@
 export type MealType = 'breakfast' | 'lunch';
 
-export type OrderStatus = 'reviewing' | 'preparing' | 'served';
+export type OrderStatus = 'reviewing' | 'preparing' | 'served' | 'voided';
 
 export interface BreakfastSelection {
   food: string[];
@@ -43,6 +43,7 @@ export interface KitchenMetrics {
   reviewing: number;
   preparing: number;
   served: number;
+  voided: number;
   allMeals: number;
   breakfastCount: number;
   lunchCount: number;

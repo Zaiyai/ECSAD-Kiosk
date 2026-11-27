@@ -132,6 +132,7 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
   reviewing: 'Reviewing',
   preparing: 'Preparing',
   served: 'Served',
+  voided: 'Voided',
 };
 
 export function formatRelativeTime(isoDate: string, nowMs = Date.now()): string {

@@ -6,7 +6,12 @@ import {
 } from '@/lib/orders-store';
 import type { MealType, OrderStatus } from '@/lib/types';
 
-const VALID_STATUSES: OrderStatus[] = ['reviewing', 'preparing', 'served'];
+const VALID_STATUSES: OrderStatus[] = [
+  'reviewing',
+  'preparing',
+  'served',
+  'voided',
+];
 
 export async function PATCH(
   req: NextRequest,

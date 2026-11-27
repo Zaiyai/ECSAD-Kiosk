@@ -203,6 +203,7 @@ export default function LiveOrderStatusClient() {
               const isReviewing = order.status === 'reviewing';
               const isPreparing = order.status === 'preparing';
               const isServed = order.status === 'served';
+              const isVoided = order.status === 'voided';
 
               return (
                 <article
@@ -244,12 +245,15 @@ export default function LiveOrderStatusClient() {
                           ? 'bg-primary-fixed text-on-primary-fixed-variant'
                           : isServed
                           ? 'bg-surface-container-high text-on-surface'
+                          : isVoided
+                          ? 'bg-error-container text-on-error-container'
                           : 'bg-secondary-container text-primary'
                       }`}
                     >
                       {isReviewing && <ReceiptText className="w-3.5 h-3.5" />}
                       {isPreparing && <Flame className="w-3.5 h-3.5" />}
                       {isServed && <CheckCircle2 className="w-3.5 h-3.5" />}
+                      {isVoided && <X className="w-3.5 h-3.5" />}
                       <span>{STATUS_LABELS[order.status]}</span>
                     </span>
                   </div>
@@ -343,6 +347,13 @@ export default function LiveOrderStatusClient() {
                       <Lock className="w-4 h-4 text-outline shrink-0" />
                       <span className="text-[12px] leading-4 text-on-surface-variant">
                         Kitchen has started — editing locked
+                      </span>
+                    </div>
+                  ) : isVoided ? (
+                    <div className="flex items-center gap-1.5 text-error pt-0.5 min-h-[36px]">
+                      <X className="w-4 h-4 shrink-0" />
+                      <span className="text-[12px] leading-4 font-semibold">
+                        This order was voided by the kitchen
                       </span>
                     </div>
                   ) : (

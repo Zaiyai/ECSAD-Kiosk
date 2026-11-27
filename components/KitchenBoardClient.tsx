@@ -51,6 +51,7 @@ export default function KitchenBoardClient({
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [refreshing, setRefreshing] = useState(false);
 
@@ -113,6 +114,14 @@ export default function KitchenBoardClient({
   }
 
   async function moveOrder(orderId: string, targetStatus: OrderStatus) {
+    if (
+      targetStatus === 'voided' &&
+      !window.confirm('Void this order? This action cannot be undone.')
+    ) {
+      return;
+    }
+
+    setActionError(null);
     setUpdatingId(orderId);
     try {
       const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
@@ -126,38 +135,47 @@ export default function KitchenBoardClient({
         return;
       }
 
-      if (res.ok) {
-        // Optimistically reflect immediately while SSE confirms
-        setOrders((prev) => {
-          const next = prev.map((o) =>
-            o.id === orderId
-              ? { ...o, status: targetStatus, updatedAt: new Date().toISOString() }
-              : o
-          );
-          let reviewing = 0;
-          let preparing = 0;
-          let served = 0;
-          let breakfastCount = 0;
-          let lunchCount = 0;
-          for (const o of next) {
-            if (o.status === 'reviewing') reviewing++;
-            else if (o.status === 'preparing') preparing++;
-            else if (o.status === 'served') served++;
-            if (o.meal === 'breakfast') breakfastCount++;
-            else lunchCount++;
-          }
-          setMetrics({
-            totalActive: reviewing + preparing,
-            reviewing,
-            preparing,
-            served,
-            allMeals: next.length,
-            breakfastCount,
-            lunchCount,
-          });
-          return next;
-        });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        setActionError(data.error || 'Unable to update this order.');
+        return;
       }
+
+      // Optimistically reflect immediately while SSE confirms
+      setOrders((prev) => {
+        const next = prev.map((o) =>
+          o.id === orderId
+            ? { ...o, status: targetStatus, updatedAt: new Date().toISOString() }
+            : o
+        );
+        let reviewing = 0;
+        let preparing = 0;
+        let served = 0;
+        let voided = 0;
+        let breakfastCount = 0;
+        let lunchCount = 0;
+        for (const o of next) {
+          if (o.status === 'reviewing') reviewing++;
+          else if (o.status === 'preparing') preparing++;
+          else if (o.status === 'served') served++;
+          else if (o.status === 'voided') voided++;
+          if (o.meal === 'breakfast') breakfastCount++;
+          else lunchCount++;
+        }
+        setMetrics({
+          totalActive: reviewing + preparing,
+          reviewing,
+          preparing,
+          served,
+          voided,
+          allMeals: next.length,
+          breakfastCount,
+          lunchCount,
+        });
+        return next;
+      });
+    } catch {
+      setActionError('Unable to update this order. Check your connection and try again.');
     } finally {
       setUpdatingId(null);
     }
@@ -167,7 +185,7 @@ export default function KitchenBoardClient({
   const duplicateMap = useMemo(() => {
     const groups = new Map<string, Set<string>>();
     for (const order of orders) {
-      if (order.status === 'served') continue;
+      if (order.status === 'served' || order.status === 'voided') continue;
       const key = `${order.meal}::${order.panelistName.trim().toLowerCase()}`;
       if (!groups.has(key)) groups.set(key, new Set());
       groups.get(key)!.add(order.deviceToken);
@@ -240,6 +258,15 @@ export default function KitchenBoardClient({
       </header>
 
       <main className="flex flex-col relative w-full max-w-7xl mx-auto pt-16 pb-12 flex-1">
+        {actionError && (
+          <div
+            role="alert"
+            className="mx-4 mt-3 rounded-xl bg-error-container text-on-error-container px-4 py-3 text-[13px] font-medium border border-error/20"
+          >
+            {actionError}
+          </div>
+        )}
+
         {/* Live Operational Metrics & Context Bar */}
         <section className="px-4 pt-3 pb-2 flex flex-col gap-2">
           <div className="bg-surface-container-low rounded-xl p-4 shadow-sm flex flex-col gap-3">
@@ -380,6 +407,7 @@ export default function KitchenBoardClient({
                     count: metrics.preparing,
                   },
                   { id: 'served', label: 'Served', count: metrics.served },
+                  { id: 'voided', label: 'Voided', count: metrics.voided },
                 ] as const
               ).map((tab) => {
                 const active = statusFilter === tab.id;
@@ -431,21 +459,33 @@ export default function KitchenBoardClient({
               const dupKey = `${order.meal}::${order.panelistName.trim().toLowerCase()}`;
               const dupTokens = duplicateMap.get(dupKey);
               const isDuplicate =
-                order.status !== 'served' && dupTokens && dupTokens.size > 1;
+                order.status !== 'served' &&
+                order.status !== 'voided' &&
+                dupTokens &&
+                dupTokens.size > 1;
               const relativeTime = formatRelativeTime(order.createdAt, nowMs);
               const isJustNow = relativeTime === 'Just now';
               const isBusy = updatingId === order.id;
+              const isVoided = order.status === 'voided';
 
-              if (order.status === 'served') {
+              if (order.status === 'served' || isVoided) {
                 return (
                   <article
                     key={order.id}
-                    className="bg-surface-container-lowest rounded-xl p-4 shadow-sm opacity-85 flex flex-col gap-3 relative overflow-hidden transition-all duration-200 border border-outline-variant/25"
+                    className={`bg-surface-container-lowest rounded-xl p-4 shadow-sm flex flex-col gap-3 relative overflow-hidden transition-all duration-200 ${
+                      isVoided
+                        ? 'opacity-75 border border-error/25'
+                        : 'opacity-85 border border-outline-variant/25'
+                    }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <Check className="w-5 h-5 text-secondary shrink-0" />
+                          {isVoided ? (
+                            <X className="w-5 h-5 text-error shrink-0" />
+                          ) : (
+                            <Check className="w-5 h-5 text-secondary shrink-0" />
+                          )}
                           <h2 className="text-[18px] leading-[24px] font-semibold text-on-surface truncate line-through">
                             {order.panelistName}
                           </h2>
@@ -456,8 +496,12 @@ export default function KitchenBoardClient({
                           {order.note ? ` · ${order.note}` : ''}
                         </span>
                       </div>
-                      <span className="font-label text-[11px] font-bold text-on-surface-variant whitespace-nowrap">
-                        Served ✓
+                      <span
+                        className={`font-label text-[11px] font-bold whitespace-nowrap ${
+                          isVoided ? 'text-error' : 'text-on-surface-variant'
+                        }`}
+                      >
+                        {isVoided ? 'Voided' : 'Served ✓'}
                       </span>
                     </div>
 
@@ -473,15 +517,17 @@ export default function KitchenBoardClient({
                           .filter(Boolean)
                           .join(', ')}
                       </span>
-                      <button
-                        type="button"
-                        disabled={isBusy}
-                        onClick={() => moveOrder(order.id, 'preparing')}
-                        className="min-h-[36px] px-3 rounded-full bg-surface-container-highest hover:bg-surface-dim text-on-surface-variant font-label text-[11px] font-semibold flex items-center gap-1 shrink-0 active:scale-95 transition-all"
-                      >
-                        <Undo2 className="w-3.5 h-3.5" />
-                        <span>Return</span>
-                      </button>
+                      {order.status === 'served' && (
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() => moveOrder(order.id, 'preparing')}
+                            className="min-h-[36px] px-3 rounded-full bg-surface-container-highest hover:bg-surface-dim text-on-surface-variant font-label text-[11px] font-semibold flex items-center gap-1 shrink-0 active:scale-95 transition-all disabled:opacity-60"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                            <span>Return</span>
+                          </button>
+                      )}
                     </div>
                   </article>
                 );
@@ -657,15 +703,26 @@ export default function KitchenBoardClient({
 
                   {/* Kitchen Action Buttons */}
                   {order.status === 'reviewing' ? (
-                    <div className="pt-1">
+                    <div className="flex items-center gap-2 pt-1">
                       <button
                         type="button"
                         disabled={isBusy}
                         onClick={() => moveOrder(order.id, 'preparing')}
-                        className="w-full h-12 rounded-full bg-primary-container hover:bg-primary text-on-primary-container hover:text-on-primary font-label text-[15px] font-bold flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all disabled:opacity-60"
+                        className="flex-1 h-12 rounded-full bg-primary-container hover:bg-primary text-on-primary-container hover:text-on-primary font-label text-[15px] font-bold flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all disabled:opacity-60"
                       >
                         <Flame className="w-5 h-5" />
                         <span>Start Preparing</span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => moveOrder(order.id, 'voided')}
+                        aria-label="Void order"
+                        title="Void order"
+                        className="h-12 px-4 rounded-full border border-error/30 bg-error-container/40 text-error hover:bg-error-container font-label text-[12px] font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all disabled:opacity-60"
+                      >
+                        <X className="w-4 h-4" />
+                        <span>Void</span>
                       </button>
                     </div>
                   ) : (

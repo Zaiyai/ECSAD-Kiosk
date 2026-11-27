@@ -196,6 +196,7 @@ export function computeMetrics(orders: OrderRecord[]): KitchenMetrics {
   let reviewing = 0;
   let preparing = 0;
   let served = 0;
+  let voided = 0;
   let breakfastCount = 0;
   let lunchCount = 0;
 
@@ -203,6 +204,7 @@ export function computeMetrics(orders: OrderRecord[]): KitchenMetrics {
     if (order.status === 'reviewing') reviewing++;
     else if (order.status === 'preparing') preparing++;
     else if (order.status === 'served') served++;
+    else if (order.status === 'voided') voided++;
 
     if (order.meal === 'breakfast') breakfastCount++;
     else if (order.meal === 'lunch') lunchCount++;
@@ -213,6 +215,7 @@ export function computeMetrics(orders: OrderRecord[]): KitchenMetrics {
     reviewing,
     preparing,
     served,
+    voided,
     allMeals: orders.length,
     breakfastCount,
     lunchCount,
