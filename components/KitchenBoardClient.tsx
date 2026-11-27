@@ -53,9 +53,13 @@ export default function KitchenBoardClient({
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [refreshing, setRefreshing] = useState(false);
   const orderDialogRef = useRef<HTMLDialogElement>(null);
+  const logoutDialogRef = useRef<HTMLDialogElement>(null);
   const selectedOrder = orders.find((order) => order.id === selectedOrderId);
 
   // Real-time SSE connection
@@ -93,6 +97,13 @@ export default function KitchenBoardClient({
     }
   }, [selectedOrder]);
 
+  useEffect(() => {
+    const dialog = logoutDialogRef.current;
+    if (showLogoutDialog && dialog && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [showLogoutDialog]);
+
   async function handleRefresh() {
     setRefreshing(true);
     try {
@@ -118,9 +129,23 @@ export default function KitchenBoardClient({
   }
 
   async function handleLogout() {
-    await fetch('/api/kitchen/logout', { method: 'POST' });
-    router.push('/kitchen/login');
-    router.refresh();
+    setLoggingOut(true);
+    setLogoutError(null);
+    try {
+      const res = await fetch('/api/kitchen/logout', { method: 'POST' });
+      if (!res.ok) {
+        setLogoutError('Could not log out. Please try again.');
+        return;
+      }
+
+      setShowLogoutDialog(false);
+      router.push('/kitchen/login');
+      router.refresh();
+    } catch {
+      setLogoutError('Unable to reach the server. Please try again.');
+    } finally {
+      setLoggingOut(false);
+    }
   }
 
   async function moveOrder(orderId: string, targetStatus: OrderStatus) {
@@ -258,7 +283,10 @@ export default function KitchenBoardClient({
             <button
               type="button"
               aria-label="Staff logout"
-              onClick={handleLogout}
+              onClick={() => {
+                setLogoutError(null);
+                setShowLogoutDialog(true);
+              }}
               className="w-11 h-11 flex items-center justify-center rounded-full text-error hover:bg-error-container/40 active:scale-95 transition-all"
             >
               <LogOut className="w-5 h-5" />
@@ -782,6 +810,72 @@ export default function KitchenBoardClient({
           </div>
         )}
       </main>
+      {showLogoutDialog && (
+        <dialog
+          ref={logoutDialogRef}
+          aria-labelledby="logout-dialog-title"
+          aria-describedby="logout-dialog-description"
+          aria-busy={loggingOut}
+          onCancel={(event) => {
+            event.preventDefault();
+            if (!loggingOut) setShowLogoutDialog(false);
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget && !loggingOut) {
+              setShowLogoutDialog(false);
+            }
+          }}
+          className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-outline-variant/30 bg-surface p-0 text-on-surface shadow-2xl backdrop:bg-black/50"
+        >
+          <div className="p-6 sm:p-7">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-error-container text-error">
+              <LogOut className="h-5 w-5" />
+            </div>
+            <h2
+              id="logout-dialog-title"
+              className="mt-4 text-center text-xl font-bold"
+            >
+              Log out of the kitchen?
+            </h2>
+            <p
+              id="logout-dialog-description"
+              className="mt-2 text-center text-sm leading-6 text-on-surface-variant"
+            >
+              Are you sure? This device will not remember the admin sign-in
+              here.
+            </p>
+
+            {logoutError && (
+              <p
+                role="alert"
+                className="mt-4 rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container"
+              >
+                {logoutError}
+              </p>
+            )}
+
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                autoFocus
+                disabled={loggingOut}
+                onClick={() => setShowLogoutDialog(false)}
+                className="min-h-11 rounded-full border border-outline-variant/50 px-5 font-label text-sm font-semibold text-on-surface hover:bg-surface-container disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={loggingOut}
+                onClick={handleLogout}
+                className="min-h-11 rounded-full bg-error px-5 font-label text-sm font-bold text-on-error hover:bg-error/90 disabled:opacity-60"
+              >
+                {loggingOut ? 'Logging out...' : 'Log out'}
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
       {selectedOrder && (
         <dialog
           ref={orderDialogRef}
