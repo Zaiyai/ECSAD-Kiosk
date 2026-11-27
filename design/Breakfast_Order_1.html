@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-background": "#1a1c1f",
+          "primary-fixed": "#eaddff",
+          "on-secondary-container": "#646274",
+          "on-tertiary-container": "#fffafd",
+          "on-primary-fixed": "#25005a",
+          "surface-dim": "#dad9de",
+          "surface-container": "#eeedf2",
+          "on-primary-fixed-variant": "#5a00c6",
+          "outline": "#7b7487",
+          "on-surface-variant": "#4a4455",
+          "outline-variant": "#ccc3d8",
+          "on-tertiary": "#ffffff",
+          "surface-variant": "#e3e2e7",
+          "secondary-fixed": "#e4e0f5",
+          "primary-container": "#8a4bfc",
+          "surface-container-low": "#f4f3f8",
+          "tertiary-fixed-dim": "#cdc0ea",
+          "on-tertiary-fixed-variant": "#4b4164",
+          "tertiary-fixed": "#e9ddff",
+          "tertiary": "#60567a",
+          "tertiary-container": "#796e94",
+          "primary": "#7029e2",
+          "on-secondary-fixed": "#1b1a29",
+          "on-primary": "#ffffff",
+          "on-secondary-fixed-variant": "#464555",
+          "surface-container-high": "#e8e7ec",
+          "inverse-surface": "#2f3034",
+          "error-container": "#ffdad6",
+          "surface-container-highest": "#e3e2e7",
+          "inverse-on-surface": "#f1f0f5",
+          "surface-bright": "#faf9fe",
+          "on-secondary": "#ffffff",
+          "on-surface": "#1a1c1f",
+          "secondary": "#5e5c6e",
+          "inverse-primary": "#d2bbff",
+          "secondary-container": "#e4e0f5",
+          "on-primary-container": "#fffaff",
+          "on-tertiary-fixed": "#1f1636",
+          "on-error": "#ffffff",
+          "surface-tint": "#732ee5",
+          "primary-fixed-dim": "#d2bbff",
+          "secondary-fixed-dim": "#c7c4d8",
+          "surface-container-lowest": "#ffffff",
+          "surface": "#faf9fe",
+          "on-error-container": "#93000a",
+          "error": "#ba1a1a",
+          "background": "#faf9fe"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin": "1rem",
+          "gutter-kiosk": "1.5rem",
+          "space-xl": "2.5rem",
+          "margin-kiosk": "2rem",
+          "space-xs": "0.25rem",
+          "space-md": "1rem",
+          "space-lg": "1.5rem",
+          "gutter": "1rem",
+          "space-sm": "0.5rem"
+        },
+        "fontFamily": {
+          "headline-md": ["Plus Jakarta Sans"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "label-md": ["Space Grotesk"],
+          "label-lg": ["Space Grotesk"],
+          "body-sm": ["Plus Jakarta Sans"],
+          "label-sm": ["Space Grotesk"],
+          "headline-xl": ["Plus Jakarta Sans"],
+          "headline-sm": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"],
+          "headline-xl-mobile": ["Plus Jakarta Sans"],
+          "body-md": ["Plus Jakarta Sans"]
+        },
+        "fontSize": {
+          "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+          "label-md": ["13px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+          "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "700"}],
+          "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+          "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+          "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+          "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "headline-xl-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+        }
+      }
+    }
+  }
+</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(37,0,90,0.04)] border-b border-surface-container-high/60 pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs min-w-0"><button aria-label="Back" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container transition-colors shrink-0" onclick="history.back()"><span class="material-symbols-outlined text-[20px]">arrow_back_ios_new</span></button><div class="flex items-center gap-space-sm min-w-0"><div class="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary text-[18px]">wb_twilight</span></div><h1 class="font-headline-sm text-headline-sm text-on-surface truncate">Breakfast Order</h1></div></div><div class="flex items-center gap-space-xs shrink-0"><span class="font-label-sm text-label-sm font-semibold tracking-wider uppercase text-on-surface-variant">ECSAD KIOSK</span><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlIS0zL-TGCreSTscS09NtjXKAVI_nfJrMauVevZfJzw6a09kkrB7ApQpHa0EhvMnxYfaJF_soBWVSd5dz6Mmseu5_L0onDMMqg1GtS_tTrD8W5TnIrZT5NdkBBtcsf4jaigQqHob2alBcQeZFbq16INpEnDziJC5iFWD0RsRjNgSoRTb4aAIflffLmHVh6k9FjS__EmXMzmNB5NiGcStlIaZJcm_dBOi-Fm8cDxgK_mSPC9yKvdN1" alt="ECSAD Logo" class="w-7 h-7 rounded-full object-cover border border-primary/20 shadow-sm shrink-0"></div></div></header><main class="flex flex-col relative w-full px-margin pt-16 pb-safe bg-surface"><div class="flex flex-col w-full pb-28">
+<div class="flex flex-col gap-space-sm pt-space-sm pb-space-md">
+<div class="flex items-center justify-between gap-space-sm"><div class="flex items-center"><span class="font-label-md text-label-md text-on-surface-variant font-semibold tracking-wider uppercase">BREAKFAST MENU • STEP 1 OF 2</span></div></div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="w-1/2 h-full rounded-full bg-primary transition-all duration-300"></div>
+</div>
+
+</div>
+<div class="flex flex-col gap-space-lg">
+<section aria-labelledby="food-heading" class="flex flex-col gap-gutter">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">bakery_dining</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface" id="food-heading">Food</h2>
+</div>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Select 1 or more</span>
+</div>
+<div class="flex flex-col gap-gutter" data-group="food" data-mode="multi">
+<button class="option-card group w-full flex items-center gap-space-md p-space-sm rounded-xl bg-primary-fixed/60 border-2 border-primary text-on-primary-fixed shadow-sm transition-all duration-200 text-left" data-option="Pandesal" data-selected="true" type="button">
+<img class="w-16 h-16 rounded-lg object-cover shrink-0 shadow-sm" data-alt="Warm, freshly baked Filipino pandesal bread rolls in a woven basket, golden brown crust dusted with fine breadcrumbs, soft morning sunlight on a warm cream cafe table, appetizing editorial food photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8">
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-headline-sm text-[16px] leading-5 font-bold truncate">Pandesal</span>
+<span class="font-body-sm text-body-sm text-on-primary-fixed-variant truncate">Warm, pillowy morning rolls</span>
+</div>
+<div class="w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shrink-0 transition-colors option-indicator shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="option-card group w-full flex items-center gap-space-md p-space-sm rounded-xl bg-surface-container-lowest border-2 border-transparent text-on-surface shadow-sm transition-all duration-200 text-left" data-option="Pancake" data-selected="false" type="button">
+<img class="w-16 h-16 rounded-lg object-cover shrink-0" data-alt="Fluffy golden buttermilk pancakes stacked neatly on a ceramic plate with a pat of melting butter and warm amber maple syrup, soft cafe morning light, warm cream background, appetizing food photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrk148AGEtFsKrj120PaFsuBnDY7gVPHw2Nz8mGDQS6X9cRp-ZgvWNhsSO_-2N25ZKT4Yazn-fhvTnybiTPVzTi_mArxevm8rs8gqjuZjKB9UD9NXdD8u4LSMT60Qo3ZqW9Y5ozLSu4dmnm0dVtcY45_edaSosnCuorj4N0u1UeXKOkMrQSUs8Q6PQ3zN4HUwlSteBeIQnDkmRXxcOJFA2356b2VMD59o_AyVtFSM">
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-headline-sm text-[16px] leading-5 font-bold truncate">Pancake</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Golden stack with butter &amp; syrup</span>
+</div>
+<div class="w-6 h-6 rounded-md bg-surface-container-high text-transparent flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+<button class="option-card group w-full flex items-center gap-space-md p-space-sm rounded-xl bg-primary-fixed/60 border-2 border-primary text-on-primary-fixed shadow-sm transition-all duration-200 text-left" data-option="Scrambled Egg" data-selected="true" type="button">
+<img class="w-16 h-16 rounded-lg object-cover shrink-0 shadow-sm" data-alt="Soft, creamy folded scrambled eggs garnished with fresh chopped chives on a warm white ceramic plate, gentle morning sunlight, warm minimalist cafe aesthetic, appetizing food photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa30AVG0LKtO7eUC9F4ZsuEhm-q5iRKwVD_niAVMp9RQcboPQTLTZzpClP-tNezGAZTvsZldy2SxqE3kLTOnwq96lUmZbyH7xFJycTgPqq1xYsh3p8cGpoFnQ9iUVL0ZCCiNxDfdSRVEM7ZC_VrvxjXLDB1kPDFMRIoaLUToMoIWwOh2jwslUOPoFAP9CaEWX0cjpTIGtvIBBUrfupaV9rCVeOjslt-z4fZlD3awA">
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-headline-sm text-[16px] leading-5 font-bold truncate">Scrambled Egg</span>
+<span class="font-body-sm text-body-sm text-on-primary-fixed-variant truncate">Soft-folded, seasoned to order</span>
+</div>
+<div class="w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center shrink-0 transition-colors option-indicator shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</button>
+</div>
+</section>
+<section aria-labelledby="coffee-heading" class="flex flex-col gap-gutter">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">coffee</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface" id="coffee-heading">Coffee</h2>
+</div>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-medium">Required • Pick 1</span>
+</div>
+<div class="grid grid-cols-2 gap-gutter" data-group="coffee" data-mode="single">
+<button class="option-card w-full min-h-[56px] flex items-center justify-between gap-space-sm p-space-md rounded-xl bg-primary-fixed/60 border-2 border-primary text-on-primary-fixed shadow-sm transition-all duration-200 text-left" data-option="Coffee Black" data-selected="true" type="button">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg truncate">Coffee Black</span>
+<span class="font-body-sm text-body-sm text-on-primary-fixed-variant truncate">Bold &amp; brewed</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary bg-primary text-on-primary flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="w-2 h-2 rounded-full bg-on-primary"></span>
+</div>
+</button>
+<button class="option-card w-full min-h-[56px] flex items-center justify-between gap-space-sm p-space-md rounded-xl bg-surface-container-lowest border-2 border-transparent text-on-surface shadow-sm transition-all duration-200 text-left" data-option="Coffee White" data-selected="false" type="button">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg truncate">Coffee White</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">With creamer</span>
+</div>
+<div class="w-5 h-5 rounded-full border border-outline-variant bg-surface-container-high flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="w-2 h-2 rounded-full bg-transparent"></span>
+</div>
+</button>
+<button class="option-card w-full min-h-[56px] flex items-center justify-between gap-space-sm p-space-md rounded-xl bg-surface-container-lowest border-2 border-transparent text-on-surface shadow-sm transition-all duration-200 text-left" data-option="Coffee Mix" data-selected="false" type="button">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg truncate">Coffee Mix</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Sweet &amp; creamy</span>
+</div>
+<div class="w-5 h-5 rounded-full border border-outline-variant bg-surface-container-high flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="w-2 h-2 rounded-full bg-transparent"></span>
+</div>
+</button>
+<button class="option-card w-full min-h-[56px] flex items-center justify-between gap-space-sm p-space-md rounded-xl bg-surface-container-lowest border-2 border-transparent text-on-surface shadow-sm transition-all duration-200 text-left" data-option="No Coffee" data-selected="false" type="button">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg truncate">No Coffee</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Skip coffee</span>
+</div>
+<div class="w-5 h-5 rounded-full border border-outline-variant bg-surface-container-high flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="w-2 h-2 rounded-full bg-transparent"></span>
+</div>
+</button>
+</div>
+</section>
+<section aria-labelledby="drink-heading" class="flex flex-col gap-gutter">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">local_drink</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface" id="drink-heading">Drink</h2>
+</div>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-medium">Required • Pick 1</span>
+</div>
+<div class="grid grid-cols-2 gap-gutter" data-group="drink" data-mode="single">
+<button class="option-card w-full min-h-[56px] flex items-center justify-between gap-space-sm p-space-md rounded-xl bg-primary-fixed/60 border-2 border-primary text-on-primary-fixed shadow-sm transition-all duration-200 text-left" data-option="Water" data-selected="true" type="button">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg truncate">Water</span>
+
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary bg-primary text-on-primary flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="w-2 h-2 rounded-full bg-on-primary"></span>
+</div>
+</button>
+<button class="option-card w-full min-h-[56px] flex items-center justify-between gap-space-sm p-space-md rounded-xl bg-surface-container-lowest border-2 border-transparent text-on-surface shadow-sm transition-all duration-200 text-left" data-option="Orange Juice" data-selected="false" type="button">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg truncate">Orange Juice</span>
+
+</div>
+<div class="w-5 h-5 rounded-full border border-outline-variant bg-surface-container-high flex items-center justify-center shrink-0 transition-colors option-indicator">
+<span class="w-2 h-2 rounded-full bg-transparent"></span>
+</div>
+</button>
+</div>
+</section>
+</div>
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-md shadow-[0_-4px_24px_rgba(37,0,90,0.08)] border-t border-surface-container px-margin py-space-sm pb-safe">
+<div class="max-w-xl mx-auto flex items-center justify-between gap-space-md">
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-primary font-bold" id="selection-count">4 items selected</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate" id="selection-summary">Pandesal, Scrambled Egg, Coffee Black, Water</span>
+</div>
+<button class="min-h-[48px] px-space-lg rounded-full bg-[#8A4BFC] hover:bg-primary text-white font-label-lg text-label-lg flex items-center justify-center gap-space-xs shadow-md shadow-primary/20 active:scale-95 transition-transform shrink-0" id="next-cta" type="button">
+<span>Next: Lunch Order</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  (function () {
+    const groups = document.querySelectorAll('[data-group]');
+    const countEl = document.getElementById('selection-count');
+    const summaryEl = document.getElementById('selection-summary');
+
+    function updateCardVisual(card, isSelected, mode) {
+      card.setAttribute('data-selected', isSelected ? 'true' : 'false');
+      const indicator = card.querySelector('.option-indicator');
+      const subtext = card.querySelector('span.text-body-sm');
+
+      if (isSelected) {
+        card.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'border-transparent');
+        card.classList.add('bg-primary-fixed/60', 'text-on-primary-fixed', 'border-primary');
+        if (subtext) {
+          subtext.classList.remove('text-on-surface-variant');
+          subtext.classList.add('text-on-primary-fixed-variant');
+        }
+        if (mode === 'multi') {
+          indicator.classList.remove('bg-surface-container-high', 'text-transparent');
+          indicator.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+        } else {
+          indicator.classList.remove('bg-surface-container-high', 'border-outline-variant');
+          indicator.classList.add('bg-primary', 'text-on-primary', 'border-primary');
+          const dot = indicator.querySelector('span');
+          if (dot) {
+            dot.classList.remove('bg-transparent');
+            dot.classList.add('bg-on-primary');
+          }
+        }
+      } else {
+        card.classList.remove('bg-primary-fixed/60', 'text-on-primary-fixed', 'border-primary');
+        card.classList.add('bg-surface-container-lowest', 'text-on-surface', 'border-transparent');
+        if (subtext) {
+          subtext.classList.remove('text-on-primary-fixed-variant');
+          subtext.classList.add('text-on-surface-variant');
+        }
+        if (mode === 'multi') {
+          indicator.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+          indicator.classList.add('bg-surface-container-high', 'text-transparent');
+        } else {
+          indicator.classList.remove('bg-primary', 'text-on-primary', 'border-primary');
+          indicator.classList.add('bg-surface-container-high', 'border-outline-variant');
+          const dot = indicator.querySelector('span');
+          if (dot) {
+            dot.classList.remove('bg-on-primary');
+            dot.classList.add('bg-transparent');
+          }
+        }
+      }
+    }
+
+    function updateSummary() {
+      const selectedCards = document.querySelectorAll('.option-card[data-selected="true"]');
+      const names = Array.from(selectedCards).map(c => c.getAttribute('data-option'));
+      countEl.textContent = `${names.length} item${names.length === 1 ? '' : 's'} selected`;
+      summaryEl.textContent = names.length > 0 ? names.join(', ') : 'Tap an item to begin';
+    }
+
+    groups.forEach(group => {
+      const mode = group.getAttribute('data-mode');
+      const cards = group.querySelectorAll('.option-card');
+
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          if (mode === 'multi') {
+            const currentlySelected = card.getAttribute('data-selected') === 'true';
+            updateCardVisual(card, !currentlySelected, 'multi');
+          } else {
+            cards.forEach(c => updateCardVisual(c, c === card, 'single'));
+          }
+          updateSummary();
+        });
+      });
+    });
+  })();
+</script></main>
+
+
+
+</body></html>

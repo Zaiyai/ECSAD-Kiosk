@@ -1,0 +1,145 @@
+import type { BreakfastSelection, LunchSelection, OrderStatus } from './types';
+
+export interface FoodOption {
+  id: string;
+  label: string;
+  description: string;
+  image: string;
+  alt: string;
+}
+
+export interface SimpleOption {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+export const ECSAD_LOGO_SRC = '/ecsad-logo.png';
+
+export const STATUS_PREVIEW_IMAGES = {
+  breakfast:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuAULgaaKZX3_gsdo3W8yzmx8HCw8O8NkWLrqhwyqACYYN398b2GRgZJl5FcgmApcJk6c6KnBtsAnJ-tuaWVp7cKuOk-oJRaJoQmBYHKLmStNVIEQvA0ofMMgX9qngrcH6Yhjhwqrp95_YlNLyluyJXAt917qvJPdkwi9UYX81errPoAJcKsUXNC79HJHMRnTS7__gd1jvwVLedX2msdYbZw3SkXgFR5WJ1dDKbxv80',
+  lunch:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuDQPH2HqBl9al3r4gKkGlXnjHPp2xraXvkdItYHQRbasAI2OjoWyUk3cRno5GSZITqR4UpboEpqsmC__KbtCce0yEYmOmirmixTKLcbTyIa_V5ZAk4Yx2W90bE7txXoKoslnFysxxzgLcORhQaN3TOCtah_iXFtltrcYQb3LSv5dzTMYSgnGoVyDiiYHwmTfXJallAIByuiVofR67ZKIslaIpYgjEOhXBBQcWOwVvQ',
+} as const;
+
+export const BREAKFAST_FOOD_OPTIONS: FoodOption[] = [
+  {
+    id: 'Pandesal',
+    label: 'Pandesal',
+    description: 'Warm, pillowy morning rolls',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
+    alt: 'Warm, freshly baked Filipino pandesal bread rolls in a woven basket',
+  },
+  {
+    id: 'Pancake',
+    label: 'Pancake',
+    description: 'Golden stack with butter & syrup',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBrk148AGEtFsKrj120PaFsuBnDY7gVPHw2Nz8mGDQS6X9cRp-ZgvWNhsSO_-2N25ZKT4Yazn-fhvTnybiTPVzTi_mArxevm8rs8gqjuZjKB9UD9NXdD8u4LSMT60Qo3ZqW9Y5ozLSu4dmnm0dVtcY45_edaSosnCuorj4N0u1UeXKOkMrQSUs8Q6PQ3zN4HUwlSteBeIQnDkmRXxcOJFA2356b2VMD59o_AyVtFSM',
+    alt: 'Fluffy golden buttermilk pancakes stacked neatly on a ceramic plate with butter and maple syrup',
+  },
+  {
+    id: 'Scrambled Egg',
+    label: 'Scrambled Egg',
+    description: 'Soft-folded, seasoned to order',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBa30AVG0LKtO7eUC9F4ZsuEhm-q5iRKwVD_niAVMp9RQcboPQTLTZzpClP-tNezGAZTvsZldy2SxqE3kLTOnwq96lUmZbyH7xFJycTgPqq1xYsh3p8cGpoFnQ9iUVL0ZCCiNxDfdSRVEM7ZC_VrvxjXLDB1kPDFMRIoaLUToMoIWwOh2jwslUOPoFAP9CaEWX0cjpTIGtvIBBUrfupaV9rCVeOjslt-z4fZlD3awA',
+    alt: 'Soft, creamy folded scrambled eggs garnished with fresh chopped chives on a white ceramic plate',
+  },
+];
+
+export const BREAKFAST_COFFEE_OPTIONS: SimpleOption[] = [
+  { id: 'Coffee Black', label: 'Coffee Black', description: 'Bold & brewed' },
+  { id: 'Coffee White', label: 'Coffee White', description: 'With creamer' },
+  { id: 'Coffee Mix', label: 'Coffee Mix', description: 'Sweet & creamy' },
+  { id: 'No Coffee', label: 'No Coffee', description: 'Skip coffee' },
+];
+
+export const BREAKFAST_DRINK_OPTIONS: SimpleOption[] = [
+  { id: 'Water', label: 'Water' },
+  { id: 'Orange Juice', label: 'Orange Juice' },
+];
+
+export const LUNCH_FOOD_OPTIONS: FoodOption[] = [
+  {
+    id: 'Shanghai',
+    label: 'Shanghai',
+    description: 'Savory fried spring rolls',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
+    alt: 'Crispy golden lumpiang shanghai spring rolls',
+  },
+  {
+    id: 'Siomai Steamed',
+    label: 'Siomai Steamed',
+    description: 'Pork & shrimp dumplings',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBa30AVG0LKtO7eUC9F4ZsuEhm-q5iRKwVD_niAVMp9RQcboPQTLTZzpClP-tNezGAZTvsZldy2SxqE3kLTOnwq96lUmZbyH7xFJycTgPqq1xYsh3p8cGpoFnQ9iUVL0ZCCiNxDfdSRVEM7ZC_VrvxjXLDB1kPDFMRIoaLUToMoIWwOh2jwslUOPoFAP9CaEWX0cjpTIGtvIBBUrfupaV9rCVeOjslt-z4fZlD3awA',
+    alt: 'Steamed pork and shrimp siomai dumplings',
+  },
+  {
+    id: 'Buchi',
+    label: 'Buchi',
+    description: 'Sweet sesame lotus pastry',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBrk148AGEtFsKrj120PaFsuBnDY7gVPHw2Nz8mGDQS6X9cRp-ZgvWNhsSO_-2N25ZKT4Yazn-fhvTnybiTPVzTi_mArxevm8rs8gqjuZjKB9UD9NXdD8u4LSMT60Qo3ZqW9Y5ozLSu4dmnm0dVtcY45_edaSosnCuorj4N0u1UeXKOkMrQSUs8Q6PQ3zN4HUwlSteBeIQnDkmRXxcOJFA2356b2VMD59o_AyVtFSM',
+    alt: 'Sweet sesame buchi pastry',
+  },
+  {
+    id: 'Chicken',
+    label: 'Chicken',
+    description: 'Crispy golden fried chicken',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
+    alt: 'Crispy golden fried chicken',
+  },
+];
+
+export const LUNCH_FRUIT_OPTIONS: SimpleOption[] = [
+  { id: 'Apples', label: 'Apples', description: 'Fresh sliced apples' },
+  { id: 'Grape', label: 'Grape', description: 'Sweet seedless grapes' },
+  { id: 'Orange', label: 'Orange', description: 'Fresh citrus wedges' },
+  { id: 'Banana', label: 'Banana', description: 'Fresh sweet banana' },
+];
+
+export const LUNCH_RICE_OPTIONS: SimpleOption[] = [
+  { id: 'Plain Rice', label: 'Plain Rice', description: 'Steamed fragrant white rice' },
+  { id: 'Chaopan Rice', label: 'Chaopan Rice', description: 'Fried rice & egg' },
+];
+
+export const LUNCH_DRINK_OPTIONS: SimpleOption[] = [
+  { id: 'Coke', label: 'Coke' },
+  { id: 'Royal', label: 'Royal' },
+  { id: 'Water', label: 'Water' },
+];
+
+export const DEFAULT_BREAKFAST_SELECTION: BreakfastSelection = {
+  food: ['Pandesal', 'Scrambled Egg'],
+  coffee: 'Coffee Black',
+  drink: 'Water',
+};
+
+export const DEFAULT_LUNCH_SELECTION: LunchSelection = {
+  food: ['Shanghai', 'Siomai Steamed'],
+  fruit: ['Grape'],
+  rice: 'Chaopan Rice',
+  drink: 'Royal',
+};
+
+export const STATUS_LABELS: Record<OrderStatus, string> = {
+  reviewing: 'Reviewing',
+  preparing: 'Preparing',
+  served: 'Served',
+};
+
+export function formatRelativeTime(isoDate: string, nowMs = Date.now()): string {
+  const createdMs = new Date(isoDate).getTime();
+  const diffSeconds = Math.max(0, Math.floor((nowMs - createdMs) / 1000));
+  if (diffSeconds < 60) return 'Just now';
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  return `${diffHours}h ago`;
+}
