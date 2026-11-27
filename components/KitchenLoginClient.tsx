@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -28,6 +28,24 @@ export default function KitchenLoginClient() {
   const [keepSignedIn, setKeepSignedIn] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const shouldResetSubmitting = useRef(false);
+
+  useEffect(() => {
+    const resetSubmitting = () => setSubmitting(false);
+    window.addEventListener('pageshow', resetSubmitting);
+    return () => {
+      window.removeEventListener('pageshow', resetSubmitting);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    return () => {
+      if (shouldResetSubmitting.current) {
+        shouldResetSubmitting.current = false;
+        setSubmitting(false);
+      }
+    };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,6 +69,7 @@ export default function KitchenLoginClient() {
         return;
       }
 
+      shouldResetSubmitting.current = true;
       router.push('/kitchen');
       router.refresh();
     } catch {

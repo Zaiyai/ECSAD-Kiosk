@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -44,6 +44,16 @@ export default function LunchOrderClient() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const shouldResetSubmitting = useRef(false);
+
+  useLayoutEffect(() => {
+    return () => {
+      if (shouldResetSubmitting.current) {
+        shouldResetSubmitting.current = false;
+        setSubmitting(false);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -176,6 +186,7 @@ export default function LunchOrderClient() {
           setSubmitting(false);
           return;
         }
+        shouldResetSubmitting.current = true;
         router.push('/status');
         return;
       }
@@ -200,6 +211,7 @@ export default function LunchOrderClient() {
         setSubmitting(false);
         return;
       }
+      shouldResetSubmitting.current = true;
       router.push('/status');
     } catch {
       setErrorMsg('Network error while submitting your order.');

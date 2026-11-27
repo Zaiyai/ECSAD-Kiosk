@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -41,6 +41,16 @@ export default function BreakfastOrderClient() {
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const shouldResetSaving = useRef(false);
+
+  useLayoutEffect(() => {
+    return () => {
+      if (shouldResetSaving.current) {
+        shouldResetSaving.current = false;
+        setSaving(false);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -155,6 +165,7 @@ export default function BreakfastOrderClient() {
         setSaving(false);
         return;
       }
+      shouldResetSaving.current = true;
       router.push('/status');
     } catch {
       setErrorMsg('Network error. Please try again.');

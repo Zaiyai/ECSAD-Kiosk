@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -25,6 +25,24 @@ export default function NameEntryClient() {
   const [showError, setShowError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [hasActiveOrders, setHasActiveOrders] = useState(false);
+  const shouldResetSubmitting = useRef(false);
+
+  useEffect(() => {
+    const resetSubmitting = () => setSubmitting(false);
+    window.addEventListener('pageshow', resetSubmitting);
+    return () => {
+      window.removeEventListener('pageshow', resetSubmitting);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    return () => {
+      if (shouldResetSubmitting.current) {
+        shouldResetSubmitting.current = false;
+        setSubmitting(false);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -64,6 +82,7 @@ export default function NameEntryClient() {
     setSubmitting(true);
     savePanelistName(trimmed);
     getOrCreateDeviceToken();
+    shouldResetSubmitting.current = true;
     router.push('/order/breakfast');
   }
 
