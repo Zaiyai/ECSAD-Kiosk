@@ -29,7 +29,7 @@ export const BREAKFAST_FOOD_OPTIONS: FoodOption[] = [
     label: 'Pandesal',
     description: 'Classic Filipino bread roll',
     image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
+      '/assets/pandesal.webp',
     alt: 'Warm, freshly baked Filipino pandesal bread rolls in a woven basket',
   },
   {
@@ -37,15 +37,14 @@ export const BREAKFAST_FOOD_OPTIONS: FoodOption[] = [
     label: 'Pancake',
     description: 'Golden stack of buttermilk pancakes',
     image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBrk148AGEtFsKrj120PaFsuBnDY7gVPHw2Nz8mGDQS6X9cRp-ZgvWNhsSO_-2N25ZKT4Yazn-fhvTnybiTPVzTi_mArxevm8rs8gqjuZjKB9UD9NXdD8u4LSMT60Qo3ZqW9Y5ozLSu4dmnm0dVtcY45_edaSosnCuorj4N0u1UeXKOkMrQSUs8Q6PQ3zN4HUwlSteBeIQnDkmRXxcOJFA2356b2VMD59o_AyVtFSM',
+      '/assets/pancake.webp',
     alt: 'Fluffy golden buttermilk pancakes stacked neatly on a ceramic plate with butter and maple syrup',
   },
   {
     id: 'Scrambled Egg',
     label: 'Scrambled Egg',
     description: 'Soft-folded, seasoned to order',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBa30AVG0LKtO7eUC9F4ZsuEhm-q5iRKwVD_niAVMp9RQcboPQTLTZzpClP-tNezGAZTvsZldy2SxqE3kLTOnwq96lUmZbyH7xFJycTgPqq1xYsh3p8cGpoFnQ9iUVL0ZCCiNxDfdSRVEM7ZC_VrvxjXLDB1kPDFMRIoaLUToMoIWwOh2jwslUOPoFAP9CaEWX0cjpTIGtvIBBUrfupaV9rCVeOjslt-z4fZlD3awA',
+    image: '/assets/eggs.png',
     alt: 'Soft, creamy folded scrambled eggs garnished with fresh chopped chives on a white ceramic plate',
   },
 ];
@@ -67,32 +66,28 @@ export const LUNCH_FOOD_OPTIONS: FoodOption[] = [
     id: 'Shanghai',
     label: 'Shanghai',
     description: 'Savory fried spring rolls',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
+    image: '/assets/shanghai.jxl',
     alt: 'Crispy golden lumpiang shanghai spring rolls',
   },
   {
     id: 'Siomai Steamed',
     label: 'Siomai Steamed',
     description: 'Pork dumplings',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBa30AVG0LKtO7eUC9F4ZsuEhm-q5iRKwVD_niAVMp9RQcboPQTLTZzpClP-tNezGAZTvsZldy2SxqE3kLTOnwq96lUmZbyH7xFJycTgPqq1xYsh3p8cGpoFnQ9iUVL0ZCCiNxDfdSRVEM7ZC_VrvxjXLDB1kPDFMRIoaLUToMoIWwOh2jwslUOPoFAP9CaEWX0cjpTIGtvIBBUrfupaV9rCVeOjslt-z4fZlD3awA',
+    image: '/assets/siomai.jxl',
     alt: 'Steamed pork siomai dumplings',
   },
   {
     id: 'Buchi',
     label: 'Buchi',
     description: 'Sweet sesame lotus pastry',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBrk148AGEtFsKrj120PaFsuBnDY7gVPHw2Nz8mGDQS6X9cRp-ZgvWNhsSO_-2N25ZKT4Yazn-fhvTnybiTPVzTi_mArxevm8rs8gqjuZjKB9UD9NXdD8u4LSMT60Qo3ZqW9Y5ozLSu4dmnm0dVtcY45_edaSosnCuorj4N0u1UeXKOkMrQSUs8Q6PQ3zN4HUwlSteBeIQnDkmRXxcOJFA2356b2VMD59o_AyVtFSM',
+    image: '/assets/buchi.webp',
     alt: 'Sweet sesame buchi pastry',
   },
   {
     id: 'Chicken',
     label: 'Chicken',
     description: 'Crispy golden fried chicken',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
+    image: '/assets/chicken.jpg',
     alt: 'Crispy golden fried chicken',
   },
 ];

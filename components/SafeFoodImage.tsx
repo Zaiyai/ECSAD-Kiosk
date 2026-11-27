@@ -38,6 +38,7 @@ export default function SafeFoodImage({
       height={size}
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
+      unoptimized={src.toLowerCase().endsWith('.jxl')}
       className={`object-cover shrink-0 ${className}`}
     />
   );
