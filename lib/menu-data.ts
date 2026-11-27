@@ -27,7 +27,7 @@ export const BREAKFAST_FOOD_OPTIONS: FoodOption[] = [
   {
     id: 'Pandesal',
     label: 'Pandesal',
-    description: 'Warm, pillowy morning rolls',
+    description: 'Classic Filipino bread roll',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuAq5fXt84f4VSSSNNLhgewSFSAuIZJwH8mpy7MPVrjuJeQjsw3b34qjpX6u-nkYsSLivYz_6NR1_sOVCf3Gv7VQBUhphJKQQXvHU_t7Xh5TpubQH3YaWJ5Rjs3AKWWXfXL0kDm8VeQbu1xAqtI-OexbDet4Ynr6Mav-CAHzkrWYvJbfnSHXyAOb_v3ZbP91K-SQIJ2zhH79mCHPUOw4ZRmjKLNt7XONh4CA9YGCH-8',
     alt: 'Warm, freshly baked Filipino pandesal bread rolls in a woven basket',
@@ -35,7 +35,7 @@ export const BREAKFAST_FOOD_OPTIONS: FoodOption[] = [
   {
     id: 'Pancake',
     label: 'Pancake',
-    description: 'Golden stack with butter & syrup',
+    description: 'Golden stack of buttermilk pancakes',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBrk148AGEtFsKrj120PaFsuBnDY7gVPHw2Nz8mGDQS6X9cRp-ZgvWNhsSO_-2N25ZKT4Yazn-fhvTnybiTPVzTi_mArxevm8rs8gqjuZjKB9UD9NXdD8u4LSMT60Qo3ZqW9Y5ozLSu4dmnm0dVtcY45_edaSosnCuorj4N0u1UeXKOkMrQSUs8Q6PQ3zN4HUwlSteBeIQnDkmRXxcOJFA2356b2VMD59o_AyVtFSM',
     alt: 'Fluffy golden buttermilk pancakes stacked neatly on a ceramic plate with butter and maple syrup',
@@ -51,10 +51,10 @@ export const BREAKFAST_FOOD_OPTIONS: FoodOption[] = [
 ];
 
 export const BREAKFAST_COFFEE_OPTIONS: SimpleOption[] = [
-  { id: 'Coffee Black', label: 'Coffee Black', description: 'Bold & brewed' },
-  { id: 'Coffee White', label: 'Coffee White', description: 'With creamer' },
-  { id: 'Coffee Mix', label: 'Coffee Mix', description: 'Sweet & creamy' },
-  { id: 'No Coffee', label: 'No Coffee', description: 'Skip coffee' },
+  { id: 'Coffee Black', label: 'Coffee Black', description: '' },
+  { id: 'Coffee White', label: 'Coffee White', description: '' },
+  { id: 'Coffee Mix', label: 'Coffee Mix', description: '' },
+  { id: 'No Coffee', label: 'No Coffee', description: '' },
 ];
 
 export const BREAKFAST_DRINK_OPTIONS: SimpleOption[] = [
@@ -74,10 +74,10 @@ export const LUNCH_FOOD_OPTIONS: FoodOption[] = [
   {
     id: 'Siomai Steamed',
     label: 'Siomai Steamed',
-    description: 'Pork & shrimp dumplings',
+    description: 'Pork dumplings',
     image:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBa30AVG0LKtO7eUC9F4ZsuEhm-q5iRKwVD_niAVMp9RQcboPQTLTZzpClP-tNezGAZTvsZldy2SxqE3kLTOnwq96lUmZbyH7xFJycTgPqq1xYsh3p8cGpoFnQ9iUVL0ZCCiNxDfdSRVEM7ZC_VrvxjXLDB1kPDFMRIoaLUToMoIWwOh2jwslUOPoFAP9CaEWX0cjpTIGtvIBBUrfupaV9rCVeOjslt-z4fZlD3awA',
-    alt: 'Steamed pork and shrimp siomai dumplings',
+    alt: 'Steamed pork siomai dumplings',
   },
   {
     id: 'Buchi',
@@ -99,13 +99,13 @@ export const LUNCH_FOOD_OPTIONS: FoodOption[] = [
 
 export const LUNCH_FRUIT_OPTIONS: SimpleOption[] = [
   { id: 'Apples', label: 'Apples', description: 'Fresh sliced apples' },
-  { id: 'Grape', label: 'Grape', description: 'Sweet seedless grapes' },
-  { id: 'Orange', label: 'Orange', description: 'Fresh citrus wedges' },
-  { id: 'Banana', label: 'Banana', description: 'Fresh sweet banana' },
+  { id: 'Grapes', label: 'Grapes', description: 'Sweet seedless grapes' },
+  { id: 'Oranges', label: 'Oranges', description: 'Fresh citrus wedges' },
+  { id: 'Bananas', label: 'Bananas', description: 'Fresh sweet banana' },
 ];
 
 export const LUNCH_RICE_OPTIONS: SimpleOption[] = [
-  { id: 'Plain Rice', label: 'Plain Rice', description: 'Steamed fragrant white rice' },
+  { id: 'Plain Rice', label: 'Plain Rice', description: '' },
   { id: 'Chaopan Rice', label: 'Chaopan Rice', description: 'Fried rice & egg' },
 ];
 
