@@ -243,9 +243,6 @@ export default function LunchOrderClient() {
               <h1 className="text-[18px] leading-[24px] font-semibold text-on-surface truncate">
                 Lunch Order
               </h1>
-              <span className="font-label text-[11px] leading-[14px] text-primary font-bold uppercase tracking-wider shrink-0">
-                · Midday
-              </span>
             </div>
           </div>
 
@@ -269,7 +266,7 @@ export default function LunchOrderClient() {
         {/* Progress Header */}
         <div className="flex flex-col gap-2 pt-3 pb-4">
           <div className="flex items-center justify-between">
-            <span className="font-label text-[11px] leading-[14px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            <span className="font-label text-[13px] leading-[16px] text-on-surface-variant font-semibold tracking-wider uppercase">
               {editOrderId
                 ? 'EDITING LUNCH ORDER'
                 : 'LUNCH MENU · STEP 2 OF 2'}
