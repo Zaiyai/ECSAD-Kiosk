@@ -66,6 +66,10 @@
   body {
     overscroll-behavior: none;
   }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 .font-label {
