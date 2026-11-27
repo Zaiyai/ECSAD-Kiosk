@@ -102,10 +102,10 @@ export async function PATCH(
 
   if (
     body.meal === 'lunch' &&
-    (!Array.isArray(body.fruit) || body.fruit.length === 0 || !body.rice)
+    (!Array.isArray(body.fruit) || !body.rice)
   ) {
     return NextResponse.json(
-      { error: 'Please select at least 1 fruit and a rice option.' },
+      { error: 'Please select a rice option.' },
       { status: 400 }
     );
   }

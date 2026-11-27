@@ -118,11 +118,14 @@ function orderItemsForUpdate(params: {
     }
     items.push({ category: 'coffee', item_name: params.coffee });
   } else {
-    if (!params.rice || !params.fruit?.length) {
-      throw new Error('Lunch updates require fruit and a rice selection.');
+    if (!params.rice) {
+      throw new Error('Lunch updates require a rice selection.');
     }
     items.push(
-      ...params.fruit.map((item_name) => ({ category: 'fruit', item_name }))
+      ...(params.fruit ?? []).map((item_name) => ({
+        category: 'fruit',
+        item_name,
+      }))
     );
     items.push({ category: 'rice', item_name: params.rice });
   }

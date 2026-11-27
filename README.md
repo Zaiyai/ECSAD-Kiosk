@@ -63,7 +63,7 @@ Breakfast and lunch are submitted as two separate orders, each tracked with its 
 | Category | Options | Rule |
 | :--- | :--- | :--- |
 | **Food** | Shanghai, Siomai Steamed, Buchi, Chicken | One or more |
-| **Fruit** | No Fruit, Apples, Grape, Orange | Exactly one |
+| **Fruit** | Apples, Grapes, Oranges, Bananas | 0 or more |
 | **Rice** | Plain Rice, Chaopan Rice | Exactly one |
 | **Drink** | Coke, Royal, Water | Exactly one |
 

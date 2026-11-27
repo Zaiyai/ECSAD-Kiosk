@@ -79,7 +79,9 @@ export default function LunchOrderClient() {
             if (match) {
               setSelection({
                 food: match.food,
-                fruit: match.fruit || ['Grape'],
+                fruit: (match.fruit ?? []).map((fruit) =>
+                  fruit === 'Grape' ? 'Grapes' : fruit
+                ),
                 rice: match.rice || 'Chaopan Rice',
                 drink: match.drink,
               });
@@ -154,11 +156,6 @@ export default function LunchOrderClient() {
       setErrorMsg('Please select at least 1 lunch food item.');
       return;
     }
-    if (selection.fruit.length === 0) {
-      setErrorMsg('Please select at least 1 fruit option.');
-      return;
-    }
-
     setSubmitting(true);
     setErrorMsg(null);
     const deviceToken = getOrCreateDeviceToken();
@@ -389,7 +386,7 @@ export default function LunchOrderClient() {
                   </h2>
                 </div>
                 <span className="font-label text-[11px] leading-[14px] text-on-surface-variant">
-                  Select 1 or more
+                  Optional · select any or none
                 </span>
               </div>
 

@@ -115,7 +115,6 @@ export async function POST(req: NextRequest) {
       !Array.isArray(body.lunch.food) ||
       body.lunch.food.length === 0 ||
       !Array.isArray(body.lunch.fruit) ||
-      body.lunch.fruit.length === 0 ||
       !body.lunch.rice ||
       !body.lunch.drink
     ) {

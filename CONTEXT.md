@@ -27,8 +27,8 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 
 ### Selection rules
 - Food (breakfast and lunch): one or more.
-- Coffee, drink, fruit, rice: exactly one. "No Coffee" and "No Fruit" are valid picks.
-- Every category except Food is required.
+- Coffee, drink, rice: exactly one. "No Coffee" is a valid pick.
+- Fruit: zero or more selections. All other categories except Food are required.
 
 ### Orders and statuses
 - Breakfast and lunch are two separate orders, each with its own status.
@@ -55,7 +55,7 @@ ECSAD is serving food to the panelists at the defense of the neighboring section
 
 **Lunch**
 - Food: Shanghai, Siomai Steamed, Buchi, Chicken
-- Fruit: No Fruit, Apples, Grape, Orange
+- Fruit: Apples, Grapes, Oranges, Bananas; optional, select any or none
 - Rice: Plain Rice, Chaopan Rice
 - Drink: Coke, Royal, Water
 

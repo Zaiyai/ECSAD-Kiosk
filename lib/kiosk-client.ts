@@ -77,7 +77,9 @@ export function getLunchDraft(): LunchSelection {
     ) {
       return {
         food: parsed.food,
-        fruit: parsed.fruit,
+        fruit: parsed.fruit.map((fruit) =>
+          fruit === 'Grape' ? 'Grapes' : fruit
+        ),
         rice: parsed.rice,
         drink: parsed.drink,
       };
