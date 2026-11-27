@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, ViewTransition } from 'react';
 import BreakfastOrderClient from '@/components/BreakfastOrderClient';
 
 export default function BreakfastOrderPage() {
@@ -10,7 +10,21 @@ export default function BreakfastOrderPage() {
         </div>
       }
     >
-      <BreakfastOrderClient />
+      <ViewTransition
+        enter={{
+          'nav-forward': 'nav-forward',
+          'nav-back': 'nav-back',
+          default: 'none',
+        }}
+        exit={{
+          'nav-forward': 'nav-forward',
+          'nav-back': 'nav-back',
+          default: 'none',
+        }}
+        default="none"
+      >
+        <BreakfastOrderClient />
+      </ViewTransition>
     </Suspense>
   );
 }

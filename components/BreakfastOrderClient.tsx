@@ -130,7 +130,7 @@ export default function BreakfastOrderClient() {
 
     if (!editOrderId) {
       saveBreakfastDraft(selection);
-      router.push('/order/lunch');
+      router.push('/order/lunch', { transitionTypes: ['nav-forward'] });
       return;
     }
 

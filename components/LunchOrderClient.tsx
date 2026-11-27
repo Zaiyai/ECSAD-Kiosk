@@ -223,9 +223,15 @@ export default function LunchOrderClient() {
             <button
               type="button"
               aria-label="Back"
-              onClick={() =>
-                router.push(editOrderId ? '/status' : '/order/breakfast')
-              }
+              onClick={() => {
+                if (editOrderId) {
+                  router.push('/status');
+                  return;
+                }
+                router.push('/order/breakfast', {
+                  transitionTypes: ['nav-back'],
+                });
+              }}
               className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container transition-colors shrink-0"
             >
               <ChevronLeft className="w-5 h-5" />
