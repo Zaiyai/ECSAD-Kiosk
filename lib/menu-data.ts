@@ -123,7 +123,7 @@ export const DEFAULT_BREAKFAST_SELECTION: BreakfastSelection = {
 
 export const DEFAULT_LUNCH_SELECTION: LunchSelection = {
   food: ['Shanghai', 'Siomai Steamed'],
-  fruit: ['Grapes'],
+  fruit: [],
   rice: 'Chaopan Rice',
   drink: 'Royal',
 };

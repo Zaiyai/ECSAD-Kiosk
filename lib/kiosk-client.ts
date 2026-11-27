@@ -11,7 +11,10 @@ const KEYS = {
   TOKEN: 'ecsad_device_token',
   BREAKFAST: 'ecsad_breakfast_draft',
   LUNCH: 'ecsad_lunch_draft',
+  LUNCH_VERSION: 'ecsad_lunch_draft_version',
 } as const;
+
+const LUNCH_DRAFT_VERSION = '2';
 
 export function getSavedPanelistName(): string {
   if (typeof window === 'undefined') return '';
@@ -75,14 +78,18 @@ export function getLunchDraft(): LunchSelection {
       typeof parsed.rice === 'string' &&
       typeof parsed.drink === 'string'
     ) {
-      return {
+      const isLegacyDraft =
+        localStorage.getItem(KEYS.LUNCH_VERSION) !== LUNCH_DRAFT_VERSION;
+      const selection = {
         food: parsed.food,
-        fruit: parsed.fruit.map((fruit) =>
-          fruit === 'Grape' ? 'Grapes' : fruit
-        ),
+        fruit: isLegacyDraft
+          ? []
+          : parsed.fruit.filter((fruit) => fruit !== 'Grape'),
         rice: parsed.rice,
         drink: parsed.drink,
       };
+      if (isLegacyDraft) saveLunchDraft(selection);
+      return selection;
     }
   } catch {
     // Ignore invalid storage
@@ -93,4 +100,5 @@ export function getLunchDraft(): LunchSelection {
 export function saveLunchDraft(draft: LunchSelection): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(KEYS.LUNCH, JSON.stringify(draft));
+  localStorage.setItem(KEYS.LUNCH_VERSION, LUNCH_DRAFT_VERSION);
 }
