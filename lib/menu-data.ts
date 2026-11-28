@@ -94,7 +94,6 @@ export const LUNCH_FOOD_OPTIONS: FoodOption[] = [
 
 export const LUNCH_FRUIT_OPTIONS: SimpleOption[] = [
   { id: 'Apples', label: 'Apples', description: 'Fresh sliced apples' },
-  { id: 'Grapes', label: 'Grapes', description: 'Sweet seedless grapes' },
   { id: 'Oranges', label: 'Oranges', description: 'Fresh citrus wedges' },
   { id: 'Bananas', label: 'Bananas', description: 'Fresh sweet banana' },
 ];
